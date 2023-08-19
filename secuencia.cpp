@@ -8,17 +8,15 @@ const int WINDOW_WIDTH = 1920;
 const int WINDOW_HEIGHT = 1080;
 const float PARTICLE_RADIUS = 10.0f;
 const float FRICTION = 0.9f;
-const float MAX_DISTANCE = 500.0f;
 
 struct Particle {
-    bool isAlpha;
     float velocityX;
     float velocityY;
     float posX;
     float posY;
 
-    Particle(bool alpha, float vx, float vy, float x, float y)
-        : isAlpha(alpha), velocityX(vx), velocityY(vy), posX(x), posY(y) {}
+    Particle(float vx, float vy, float x, float y)
+        : velocityX(vx), velocityY(vy), posX(x), posY(y) {}
 };
 
 std::vector<Particle> particles;
@@ -26,12 +24,9 @@ std::vector<Particle> particles;
 void DrawParticles() {
     glClear(GL_COLOR_BUFFER_BIT);
 
-    for (const Particle& particle : particles) {
-        if (particle.isAlpha)
-            glColor3f(0.0f, 0.0f, 1.0f); // Blue for alpha particles
-        else
-            glColor3f(1.0f, 0.0f, 0.0f); // Red for beta particles
+    glColor3f(1.0f, 1.0f, 1.0f); // White color for all particles
 
+    for (const Particle& particle : particles) {
         glBegin(GL_TRIANGLE_FAN);
         glVertex2f(particle.posX, particle.posY);
         const int numSegments = 16;
@@ -49,35 +44,6 @@ void DrawParticles() {
 
 void UpdateParticles(int value) {
     for (size_t i = 0; i < particles.size(); i++) {
-        if (!particles[i].isAlpha) {
-            float minDistance = MAX_DISTANCE;
-            int closestAlphaIndex = -1;
-
-            for (size_t j = 0; j < particles.size(); j++) {
-                if (particles[j].isAlpha && j != i) {
-                    float distance = std::sqrt(
-                        std::pow(particles[j].posX - particles[i].posX, 2) +
-                        std::pow(particles[j].posY - particles[i].posY, 2)
-                    );
-
-                    if (distance < minDistance) {
-                        minDistance = distance;
-                        closestAlphaIndex = j;
-                    }
-                }
-            }
-
-            if (closestAlphaIndex != -1) {
-                const float dx = particles[i].posX - particles[closestAlphaIndex].posX;
-                const float dy = particles[i].posY - particles[closestAlphaIndex].posY;
-                const float distance = std::max(minDistance, 0.5f);
-                particles[i].velocityX -= (dx * 100) / distance;
-                particles[i].velocityY -= (dy * 100) / distance;
-                particles[i].velocityX *= FRICTION;
-                particles[i].velocityY *= FRICTION;
-            }
-        }
-
         particles[i].posX += particles[i].velocityX;
         particles[i].posY += particles[i].velocityY;
 
@@ -95,30 +61,23 @@ void UpdateParticles(int value) {
 }
 
 int main(int argc, char** argv) {
-    if (argc < 3) {
-        std::cout << "Usage: " << argv[0] << " numberOfAlphaParticles numberOfBetaParticles\n";
+    if (argc < 2) {
+        std::cout << "Usage: " << argv[0] << " numParticles\n";
         return 1;
     }
 
-    int numAlphaParticles = std::atoi(argv[1]);
-    int numBetaParticles = std::atoi(argv[2]);
+    int numParticles = std::atoi(argv[1]);
 
     std::random_device rd;
     std::default_random_engine generator(rd());
     std::uniform_real_distribution<float> randomFloat(-1.0f, 1.0f);
 
-    for (int i = 0; i < numAlphaParticles; i++) {
+    for (int i = 0; i < numParticles; i++) {
         float vx = randomFloat(generator) * 10.0f;
         float vy = randomFloat(generator) * 10.0f;
         float x = randomFloat(generator) * 700.0f;
         float y = randomFloat(generator) * 400.0f;
-        particles.emplace_back(true, vx, vy, x, y);
-    }
-
-    for (int i = 0; i < numBetaParticles; i++) {
-        float x = randomFloat(generator) * 700.0f;
-        float y = randomFloat(generator) * 400.0f;
-        particles.emplace_back(false, 0.0f, 0.0f, x, y);
+        particles.emplace_back(vx, vy, x, y);
     }
 
     glutInit(&argc, argv);
