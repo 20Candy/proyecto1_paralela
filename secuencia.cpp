@@ -47,12 +47,28 @@ void UpdateParticles(int value) {
         particles[i].posX += particles[i].velocityX;
         particles[i].posY += particles[i].velocityY;
 
+        // Bounce off the window edges
         if (particles[i].posX < -WINDOW_WIDTH / 2 + PARTICLE_RADIUS || particles[i].posX > WINDOW_WIDTH / 2 - PARTICLE_RADIUS) {
             particles[i].velocityX = -particles[i].velocityX;
         }
 
         if (particles[i].posY < -WINDOW_HEIGHT / 2 + PARTICLE_RADIUS || particles[i].posY > WINDOW_HEIGHT / 2 - PARTICLE_RADIUS) {
             particles[i].velocityY = -particles[i].velocityY;
+        }
+
+        // Check for collisions with other particles
+        for (size_t j = 0; j < particles.size(); j++) {
+            if (i != j) {
+                float dx = particles[j].posX - particles[i].posX;
+                float dy = particles[j].posY - particles[i].posY;
+                float distance = std::sqrt(dx * dx + dy * dy);
+
+                if (distance < PARTICLE_RADIUS * 2) {
+                    // Collide with the other particle and update velocities
+                    particles[i].velocityX = -particles[i].velocityX;
+                    particles[i].velocityY = -particles[i].velocityY;
+                }
+            }
         }
     }
 
