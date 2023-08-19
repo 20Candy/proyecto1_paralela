@@ -96,13 +96,17 @@ int main(int argc, char** argv) {
     std::uniform_real_distribution<float> randomFloatX(-WINDOW_WIDTH / 2 + PARTICLE_RADIUS, WINDOW_WIDTH / 2 - PARTICLE_RADIUS);
     std::uniform_real_distribution<float> randomFloatY(-WINDOW_HEIGHT / 2 + PARTICLE_RADIUS, WINDOW_HEIGHT / 2 - PARTICLE_RADIUS);
     std::uniform_real_distribution<float> randomVelocity(-10.0f, 10.0f);
+    std::uniform_real_distribution<float> randomColor(0.0f, 1.0f);
 
     for (int i = 0; i < numParticles; i++) {
         float vx = randomVelocity(generator);
         float vy = randomVelocity(generator);
         float x = randomFloatX(generator);
         float y = randomFloatY(generator);
-        particles.emplace_back(vx, vy, x, y);
+        float r = randomColor(generator);
+        float g = randomColor(generator);
+        float b = randomColor(generator);
+        particles.emplace_back(vx, vy, x, y, r, g, b);
     }
 
     glutInit(&argc, argv);
