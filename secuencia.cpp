@@ -133,19 +133,19 @@ int main(int argc, char** argv) {
     }
 
     int numParticles = std::atoi(argv[1]);
-    int numAlphaParticles = numParticles / 5;
-    int numBetaParticles = numParticles - numAlphaParticles;
 
     std::random_device rd;
     std::default_random_engine generator(rd());
     std::uniform_real_distribution<float> randomFloat(-1.0f, 1.0f);
 
-    for (int i = 0; i < numAlphaParticles; i++) {
-        float vx = randomFloat(generator) * 0.1f;  // Adjust the velocity range
-        float vy = randomFloat(generator) * 0.1f;
-        float x = randomFloat(generator) * 700.0f;
-        float y = randomFloat(generator) * 400.0f;
-        particles.emplace_back(true, 0, vx, vy, x, y);
+    for (int i = 0; i < numParticles; i++) {
+        bool isAlpha = (i % 2 == 0);
+        float vx = 0.1f * randomFloat(generator); // Adjust the factor to control speed
+        float vy = 0.1f * randomFloat(generator); // Adjust the factor to control speed
+        float x = randomFloat(generator) * (WINDOW_WIDTH / 2 - PARTICLE_RADIUS);
+        float y = randomFloat(generator) * (WINDOW_HEIGHT / 2 - PARTICLE_RADIUS);
+        particles.emplace_back(isAlpha, vx, vy, x, y);
+    } particles.emplace_back(true, 0, vx, vy, x, y);
     }
 
     for (int i = 0; i < numBetaParticles; i++) {
