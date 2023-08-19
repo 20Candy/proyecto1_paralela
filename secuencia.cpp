@@ -29,15 +29,15 @@ void DrawParticles() {
 
     for (const Particle& particle : particles) {
         if (particle.isAlpha)
-            glColor3f(0.0f, 0.0f, 1.0f); // Blue for alpha particles
+            glColor3f(0.0f, 0.0f, 1.0f);
         else if (particle.colorID == 1)
-            glColor3f(1.0f, 0.0f, 0.0f); // Red
+            glColor3f(1.0f, 0.0f, 0.0f);
         else if (particle.colorID == 2)
-            glColor3f(0.0f, 1.0f, 0.0f); // Green
+            glColor3f(0.0f, 1.0f, 0.0f);
         else if (particle.colorID == 3)
-            glColor3f(1.0f, 1.0f, 0.0f); // Yellow
+            glColor3f(1.0f, 1.0f, 0.0f);
         else if (particle.colorID == 4)
-            glColor3f(1.0f, 0.5f, 0.0f); // Orange
+            glColor3f(1.0f, 0.5f, 0.0f);
 
         glBegin(GL_TRIANGLE_FAN);
         glVertex2f(particle.posX, particle.posY);
@@ -53,7 +53,6 @@ void DrawParticles() {
 
     glutSwapBuffers();
 }
-
 
 void UpdateParticles(int value) {
     for (size_t i = 0; i < particles.size(); i++) {
@@ -109,7 +108,7 @@ int main(int argc, char** argv) {
     }
 
     int numParticles = std::atoi(argv[1]);
-    int numAlphaParticles = numParticles / 5; // Distribuir entre 5 colores
+    int numAlphaParticles = numParticles / 5;
     int numBetaParticles = numParticles - numAlphaParticles;
 
     std::random_device rd;
@@ -121,13 +120,13 @@ int main(int argc, char** argv) {
         float vy = randomFloat(generator) * 10.0f;
         float x = randomFloat(generator) * 700.0f;
         float y = randomFloat(generator) * 400.0f;
-        particles.emplace_back(true, vx, vy, x, y);
+        particles.emplace_back(true, 0, vx, vy, x, y);
     }
 
     for (int i = 0; i < numBetaParticles; i++) {
         float x = randomFloat(generator) * 700.0f;
         float y = randomFloat(generator) * 400.0f;
-        particles.emplace_back(false, 0.0f, 0.0f, x, y);
+        particles.emplace_back(false, i % 4 + 1, 0.0f, 0.0f, x, y);
     }
 
     glutInit(&argc, argv);
