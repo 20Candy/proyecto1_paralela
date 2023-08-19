@@ -18,8 +18,8 @@ struct Particle {
     float posX;
     float posY;
 
-    Particle(bool alpha, float vx, float vy, float x, float y)
-        : isAlpha(alpha), velocityX(vx), velocityY(vy), posX(x), posY(y) {}
+    Particle(bool alpha, int color, float vx, float vy, float x, float y)
+        : isAlpha(alpha), colorID(color), velocityX(vx), velocityY(vy), posX(x), posY(y) {}
 };
 
 std::vector<Particle> particles;
@@ -103,13 +103,14 @@ void UpdateParticles(int value) {
 }
 
 int main(int argc, char** argv) {
-    if (argc < 3) {
-        std::cout << "Usage: " << argv[0] << " numberOfAlphaParticles numberOfBetaParticles\n";
+    if (argc < 2) {
+        std::cout << "Usage: " << argv[0] << " numberOfParticles\n";
         return 1;
     }
 
-    int numAlphaParticles = std::atoi(argv[1]);
-    int numBetaParticles = std::atoi(argv[2]);
+    int numParticles = std::atoi(argv[1]);
+    int numAlphaParticles = numParticles / 5; // Distribuir entre 5 colores
+    int numBetaParticles = numParticles - numAlphaParticles;
 
     std::random_device rd;
     std::default_random_engine generator(rd());
