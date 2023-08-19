@@ -140,12 +140,11 @@ int main(int argc, char** argv) {
 
     for (int i = 0; i < numParticles; i++) {
         bool isAlpha = (i % 2 == 0);
-        float vx = 0.1f * randomFloat(generator); // Adjust the factor to control speed
-        float vy = 0.1f * randomFloat(generator); // Adjust the factor to control speed
+        float vx = 0.02f * randomFloat(generator); // Adjust the factor to control speed
+        float vy = 0.02f * randomFloat(generator); // Adjust the factor to control speed
         float x = randomFloat(generator) * (WINDOW_WIDTH / 2 - PARTICLE_RADIUS);
         float y = randomFloat(generator) * (WINDOW_HEIGHT / 2 - PARTICLE_RADIUS);
         particles.emplace_back(isAlpha, vx, vy, x, y);
-    } particles.emplace_back(true, 0, vx, vy, x, y);
     }
 
     for (int i = 0; i < numBetaParticles; i++) {
