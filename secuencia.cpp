@@ -57,8 +57,8 @@ void DrawParticles() {
 void UpdateParticles(int value) {
     for (size_t i = 0; i < particles.size(); i++) {
         if (!particles[i].isAlpha) {
-            float minDistance = MAX_DISTANCE;
             int closestAlphaIndex = -1;
+            float minDistance = MAX_DISTANCE;
 
             for (size_t j = 0; j < particles.size(); j++) {
                 if (particles[j].isAlpha && j != i) {
@@ -74,40 +74,15 @@ void UpdateParticles(int value) {
                 }
             }
 
-            if (closestAlphaIndex != -1) {
-                const float dx = particles[i].posX - particles[closestAlphaIndex].posX;
-                const float dy = particles[i].posY - particles[closestAlphaIndex].posY;
-                const float distance = std::max(minDistance, 0.5f);
+            if (closestAlphaIndex != -1 && minDistance < MAX_DISTANCE) {
+                float dx = particles[i].posX - particles[closestAlphaIndex].posX;
+                float dy = particles[i].posY - particles[closestAlphaIndex].posY;
+                float distance = std::max(minDistance, 0.5f);
                 particles[i].velocityX -= (dx * 100) / distance;
                 particles[i].velocityY -= (dy * 100) / distance;
                 particles[i].velocityX *= FRICTION;
                 particles[i].velocityY *= FRICTION;
             }
-
-
-            
-            for (size_t j = 0; j < particles.size(); j++) {
-                if (j != i) {
-                    float distance = std::sqrt(
-                        std::pow(particles[j].posX - particles[i].posX, 2) +
-                        std::pow(particles[j].posY - particles[i].posY, 2)
-                    );
-
-                    if (distance < PARTICLE_RADIUS * 2.0f) {  // If particles are too close
-                        const float dx = particles[i].posX - particles[j].posX;
-                        const float dy = particles[i].posY - particles[j].posY;
-                        const float length = std::sqrt(dx * dx + dy * dy);
-                        const float nx = dx / length;
-                        const float ny = dy / length;
-
-                        particles[i].velocityX += nx * 0.1f;
-                        particles[i].velocityY += ny * 0.1f;
-                        particles[j].velocityX -= nx * 0.1f;
-                        particles[j].velocityY -= ny * 0.1f;
-                    }
-                }
-            }
-
         }
 
         particles[i].posX += particles[i].velocityX;
@@ -120,11 +95,36 @@ void UpdateParticles(int value) {
         if (particles[i].posY < -WINDOW_HEIGHT / 2 + PARTICLE_RADIUS || particles[i].posY > WINDOW_HEIGHT / 2 - PARTICLE_RADIUS) {
             particles[i].velocityY = -particles[i].velocityY;
         }
+
+        for (size_t j = 0; j < particles.size(); j++) {
+            if (j != i) {
+                float dx = particles[j].posX - particles[i].posX;
+                float dy = particles[j].posY - particles[i].posY;
+                float distance = std::sqrt(dx * dx + dy * dy);
+
+                if (distance < PARTICLE_RADIUS * 2.0f) {
+                    float overlap = PARTICLE_RADIUS * 2.0f - distance;
+                    float adjustX = (overlap * dx) / distance;
+                    float adjustY = (overlap * dy) / distance;
+
+                    particles[i].posX -= adjustX * 0.5f;
+                    particles[i].posY -= adjustY * 0.5f;
+                    particles[j].posX += adjustX * 0.5f;
+                    particles[j].posY += adjustY * 0.5f;
+
+                    particles[i].velocityX *= -1.0f;
+                    particles[i].velocityY *= -1.0f;
+                    particles[j].velocityX *= -1.0f;
+                    particles[j].velocityY *= -1.0f;
+                }
+            }
+        }
     }
 
     glutPostRedisplay();
     glutTimerFunc(0, UpdateParticles, 0);
 }
+
 
 int main(int argc, char** argv) {
     if (argc < 2) {
