@@ -17,9 +17,12 @@ struct Particle {
     float velocityY;
     float posX;
     float posY;
+    float colorR;
+    float colorG;
+    float colorB;
 
-    Particle(float vx, float vy, float x, float y)
-        : velocityX(vx), velocityY(vy), posX(x), posY(y) {}
+    Particle(float vx, float vy, float x, float y, float r, float g, float b)
+        : velocityX(vx), velocityY(vy), posX(x), posY(y), colorR(r), colorG(g), colorB(b) {}
 };
 
 std::vector<Particle> particles;
@@ -27,9 +30,9 @@ std::vector<Particle> particles;
 void DrawParticles() {
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glColor3f(1.0f, 1.0f, 1.0f); // White color for all particles
-
     for (const Particle& particle : particles) {
+        glColor3f(particle.colorR, particle.colorG, particle.colorB);
+
         glBegin(GL_TRIANGLE_FAN);
         glVertex2f(particle.posX, particle.posY);
         const int numSegments = 16;
@@ -44,6 +47,7 @@ void DrawParticles() {
 
     glutSwapBuffers();
 }
+
 
 void UpdateParticles(int value) {
     for (size_t i = 0; i < particles.size(); i++) {
