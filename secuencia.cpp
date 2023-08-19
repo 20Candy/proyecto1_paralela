@@ -12,6 +12,7 @@ const float MAX_DISTANCE = 500.0f;
 
 struct Particle {
     bool isAlpha;
+    int colorID;
     float velocityX;
     float velocityY;
     float posX;
