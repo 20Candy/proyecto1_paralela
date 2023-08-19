@@ -57,17 +57,17 @@ void UpdateParticles(int value) {
         }
 
         // Check for collisions with other particles
-        for (size_t j = 0; j < particles.size(); j++) {
-            if (i != j) {
-                float dx = particles[j].posX - particles[i].posX;
-                float dy = particles[j].posY - particles[i].posY;
-                float distance = std::sqrt(dx * dx + dy * dy);
+        for (size_t j = i + 1; j < particles.size(); j++) {
+            float dx = particles[j].posX - particles[i].posX;
+            float dy = particles[j].posY - particles[i].posY;
+            float distance = std::sqrt(dx * dx + dy * dy);
 
-                if (distance < PARTICLE_RADIUS * 2) {
-                    // Collide with the other particle and update velocities
-                    particles[i].velocityX = -particles[i].velocityX;
-                    particles[i].velocityY = -particles[i].velocityY;
-                }
+            if (distance < PARTICLE_RADIUS * 2) {
+                // Collide with the other particle and update velocities
+                particles[i].velocityX = -particles[i].velocityX;
+                particles[i].velocityY = -particles[i].velocityY;
+                particles[j].velocityX = -particles[j].velocityX;
+                particles[j].velocityY = -particles[j].velocityY;
             }
         }
     }
