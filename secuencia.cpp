@@ -1,6 +1,5 @@
 //Proyecto 1 Paralela
 
-
 #include <iostream>
 #include <cmath>
 #include <GL/glut.h>
