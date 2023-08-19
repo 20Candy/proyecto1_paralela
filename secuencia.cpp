@@ -116,8 +116,8 @@ int main(int argc, char** argv) {
     std::uniform_real_distribution<float> randomFloat(-1.0f, 1.0f);
 
     for (int i = 0; i < numAlphaParticles; i++) {
-        float vx = randomFloat(generator) * 2.0f;  // Adjust the velocity range
-        float vy = randomFloat(generator) * 2.0f;
+        float vx = randomFloat(generator) * 0.5f;  // Adjust the velocity range
+        float vy = randomFloat(generator) * 0.5f;
         float x = randomFloat(generator) * 700.0f;
         float y = randomFloat(generator) * 400.0f;
         particles.emplace_back(true, 0, vx, vy, x, y);
