@@ -9,7 +9,7 @@
 
 const int WINDOW_WIDTH = 1920;
 const int WINDOW_HEIGHT = 1080;
-const float PARTICLE_RADIUS = 10.0f;
+const float PARTICLE_RADIUS = 20.0f;
 const float FRICTION = 0.9f;
 
 struct Particle {
