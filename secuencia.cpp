@@ -29,8 +29,14 @@ void DrawParticles() {
     for (const Particle& particle : particles) {
         if (particle.isAlpha)
             glColor3f(0.0f, 0.0f, 1.0f); // Blue for alpha particles
-        else
-            glColor3f(1.0f, 0.0f, 0.0f); // Red for beta particles
+        else if (particle.colorID == 1)
+            glColor3f(1.0f, 0.0f, 0.0f); // Red
+        else if (particle.colorID == 2)
+            glColor3f(0.0f, 1.0f, 0.0f); // Green
+        else if (particle.colorID == 3)
+            glColor3f(1.0f, 1.0f, 0.0f); // Yellow
+        else if (particle.colorID == 4)
+            glColor3f(1.0f, 0.5f, 0.0f); // Orange
 
         glBegin(GL_TRIANGLE_FAN);
         glVertex2f(particle.posX, particle.posY);
@@ -46,6 +52,7 @@ void DrawParticles() {
 
     glutSwapBuffers();
 }
+
 
 void UpdateParticles(int value) {
     for (size_t i = 0; i < particles.size(); i++) {
