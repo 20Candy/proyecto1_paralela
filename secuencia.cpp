@@ -73,7 +73,7 @@ void UpdateParticles(int value) {
     }
 
     glutPostRedisplay();
-    glutTimerFunc(0, UpdateParticles, 0);
+    glutTimerFunc(16, UpdateParticles, 0); // 16 ms ~ 60 fps
 }
 
 int main(int argc, char** argv) {
@@ -86,13 +86,15 @@ int main(int argc, char** argv) {
 
     std::random_device rd;
     std::default_random_engine generator(rd());
-    std::uniform_real_distribution<float> randomFloat(-1.0f, 1.0f);
+    std::uniform_real_distribution<float> randomFloatX(-WINDOW_WIDTH / 2 + PARTICLE_RADIUS, WINDOW_WIDTH / 2 - PARTICLE_RADIUS);
+    std::uniform_real_distribution<float> randomFloatY(-WINDOW_HEIGHT / 2 + PARTICLE_RADIUS, WINDOW_HEIGHT / 2 - PARTICLE_RADIUS);
+    std::uniform_real_distribution<float> randomVelocity(-10.0f, 10.0f);
 
     for (int i = 0; i < numParticles; i++) {
-        float vx = randomFloat(generator) * 10.0f;
-        float vy = randomFloat(generator) * 10.0f;
-        float x = randomFloat(generator) * 700.0f;
-        float y = randomFloat(generator) * 400.0f;
+        float vx = randomVelocity(generator);
+        float vy = randomVelocity(generator);
+        float x = randomFloatX(generator);
+        float y = randomFloatY(generator);
         particles.emplace_back(vx, vy, x, y);
     }
 
