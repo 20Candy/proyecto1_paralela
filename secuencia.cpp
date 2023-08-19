@@ -48,16 +48,16 @@ void DrawParticles() {
 }
 
 void UpdateParticles(int value) {
-    for (Particle& particle : particles) {
-        if (!particle.isAlpha) {
+    for (size_t i = 0; i < particles.size(); i++) {
+        if (!particles[i].isAlpha) {
             float minDistance = MAX_DISTANCE;
             int closestAlphaIndex = -1;
 
             for (size_t j = 0; j < particles.size(); j++) {
                 if (particles[j].isAlpha && j != i) {
                     float distance = std::sqrt(
-                        std::pow(particles[j].posX - particle.posX, 2) +
-                        std::pow(particles[j].posY - particle.posY, 2)
+                        std::pow(particles[j].posX - particles[i].posX, 2) +
+                        std::pow(particles[j].posY - particles[i].posY, 2)
                     );
 
                     if (distance < minDistance) {
@@ -68,25 +68,25 @@ void UpdateParticles(int value) {
             }
 
             if (closestAlphaIndex != -1) {
-                const float dx = particle.posX - particles[closestAlphaIndex].posX;
-                const float dy = particle.posY - particles[closestAlphaIndex].posY;
+                const float dx = particles[i].posX - particles[closestAlphaIndex].posX;
+                const float dy = particles[i].posY - particles[closestAlphaIndex].posY;
                 const float distance = std::max(minDistance, 0.5f);
-                particle.velocityX -= (dx * 100) / distance;
-                particle.velocityY -= (dy * 100) / distance;
-                particle.velocityX *= FRICTION;
-                particle.velocityY *= FRICTION;
+                particles[i].velocityX -= (dx * 100) / distance;
+                particles[i].velocityY -= (dy * 100) / distance;
+                particles[i].velocityX *= FRICTION;
+                particles[i].velocityY *= FRICTION;
             }
         }
 
-        particle.posX += particle.velocityX;
-        particle.posY += particle.velocityY;
+        particles[i].posX += particles[i].velocityX;
+        particles[i].posY += particles[i].velocityY;
 
-        if (particle.posX < -WINDOW_WIDTH / 2 + PARTICLE_RADIUS || particle.posX > WINDOW_WIDTH / 2 - PARTICLE_RADIUS) {
-            particle.velocityX = -particle.velocityX;
+        if (particles[i].posX < -WINDOW_WIDTH / 2 + PARTICLE_RADIUS || particles[i].posX > WINDOW_WIDTH / 2 - PARTICLE_RADIUS) {
+            particles[i].velocityX = -particles[i].velocityX;
         }
 
-        if (particle.posY < -WINDOW_HEIGHT / 2 + PARTICLE_RADIUS || particle.posY > WINDOW_HEIGHT / 2 - PARTICLE_RADIUS) {
-            particle.velocityY = -particle.velocityY;
+        if (particles[i].posY < -WINDOW_HEIGHT / 2 + PARTICLE_RADIUS || particles[i].posY > WINDOW_HEIGHT / 2 - PARTICLE_RADIUS) {
+            particles[i].velocityY = -particles[i].velocityY;
         }
     }
 
