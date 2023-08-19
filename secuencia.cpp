@@ -83,6 +83,31 @@ void UpdateParticles(int value) {
                 particles[i].velocityX *= FRICTION;
                 particles[i].velocityY *= FRICTION;
             }
+
+
+            
+            for (size_t j = 0; j < particles.size(); j++) {
+                if (j != i) {
+                    float distance = std::sqrt(
+                        std::pow(particles[j].posX - particles[i].posX, 2) +
+                        std::pow(particles[j].posY - particles[i].posY, 2)
+                    );
+
+                    if (distance < PARTICLE_RADIUS * 2.0f) {  // If particles are too close
+                        const float dx = particles[i].posX - particles[j].posX;
+                        const float dy = particles[i].posY - particles[j].posY;
+                        const float length = std::sqrt(dx * dx + dy * dy);
+                        const float nx = dx / length;
+                        const float ny = dy / length;
+
+                        particles[i].velocityX += nx * 0.1f;
+                        particles[i].velocityY += ny * 0.1f;
+                        particles[j].velocityX -= nx * 0.1f;
+                        particles[j].velocityY -= ny * 0.1f;
+                    }
+                }
+            }
+
         }
 
         particles[i].posX += particles[i].velocityX;
@@ -116,8 +141,8 @@ int main(int argc, char** argv) {
     std::uniform_real_distribution<float> randomFloat(-1.0f, 1.0f);
 
     for (int i = 0; i < numAlphaParticles; i++) {
-        float vx = randomFloat(generator) * 0.5f;  // Adjust the velocity range
-        float vy = randomFloat(generator) * 0.5f;
+        float vx = randomFloat(generator) * 0.1f;  // Adjust the velocity range
+        float vy = randomFloat(generator) * 0.1f;
         float x = randomFloat(generator) * 700.0f;
         float y = randomFloat(generator) * 400.0f;
         particles.emplace_back(true, 0, vx, vy, x, y);
