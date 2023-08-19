@@ -5,6 +5,7 @@
 #include <GL/glut.h>
 #include <vector>
 #include <random>
+#include <chrono>
 
 const int WINDOW_WIDTH = 1920;
 const int WINDOW_HEIGHT = 1080;
@@ -44,6 +45,24 @@ void DrawParticles() {
         glEnd();
     }
 
+    // Calculate FPS
+    frameCount++;
+    std::chrono::high_resolution_clock::time_point currentFrameTime = std::chrono::high_resolution_clock::now();
+    float deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentFrameTime - previousFrameTime).count() / 1000.0f;
+    if (deltaTime >= 1.0f) {
+        fps = static_cast<float>(frameCount) / deltaTime;
+        frameCount = 0;
+        previousFrameTime = currentFrameTime;
+    }
+
+    // Display FPS
+    glColor3f(1.0f, 1.0f, 1.0f);
+    glRasterPos2f(-WINDOW_WIDTH / 2 + 10, -WINDOW_HEIGHT / 2 + 10);
+    std::string fpsText = "FPS: " + std::to_string(static_cast<int>(fps));
+    for (char c : fpsText) {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, c);
+    }
+
     glutSwapBuffers();
 }
 
@@ -79,7 +98,7 @@ void UpdateParticles(int value) {
     }
 
     glutPostRedisplay();
-    glutTimerFunc(16, UpdateParticles, 0); // 16 ms ~ 60 fps
+    glutTimerFunc(16, UpdateParticles, 0); 
 }
 
 int main(int argc, char** argv) {
@@ -87,6 +106,8 @@ int main(int argc, char** argv) {
         std::cout << "Usage: " << argv[0] << " numParticles\n";
         return 1;
     }
+
+    previousFrameTime = std::chrono::high_resolution_clock::now();
 
     int numParticles = std::atoi(argv[1]);
 
