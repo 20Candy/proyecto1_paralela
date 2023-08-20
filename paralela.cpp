@@ -50,7 +50,8 @@ void DrawParticles() {
     for (char c : fpsText) {
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, c);
     }
-
+ 
+    #pragma omp parallel for
     for (const Particle& particle : particles) {
         glColor3f(particle.colorR, particle.colorG, particle.colorB);
         glBegin(GL_TRIANGLE_FAN);
@@ -79,6 +80,8 @@ void UpdateParticles(int value) {
         if (particles[i].posY < -WINDOW_HEIGHT / 2 + PARTICLE_RADIUS || particles[i].posY > WINDOW_HEIGHT / 2 - PARTICLE_RADIUS) {
             particles[i].velocityY = -particles[i].velocityY;
         }
+
+        #pragma omp parallel for
         for (size_t j = i + 1; j < particles.size(); j++) {
             float dx = particles[j].posX - particles[i].posX;
             float dy = particles[j].posY - particles[i].posY;
