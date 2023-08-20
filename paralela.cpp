@@ -101,7 +101,7 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    int numThreads = 4
+    int numThreads = 4;
     omp_set_num_threads(numThreads);
 
     previousFrameTime = std::chrono::high_resolution_clock::now();
