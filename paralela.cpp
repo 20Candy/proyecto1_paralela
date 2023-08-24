@@ -79,7 +79,7 @@ void UpdateParticles(int value) {
             particles[i].velocityY = -particles[i].velocityY;
         }
 
-        #pragma omp parallel for
+        
         for (size_t j = i + 1; j < particles.size(); j++) {
             float dx = particles[j].posX - particles[i].posX;
             float dy = particles[j].posY - particles[i].posY;
@@ -97,12 +97,15 @@ void UpdateParticles(int value) {
 }
 
 int main(int argc, char** argv) {
+
     if (argc < 2) {
         std::cout << "Usage: " << argv[0] << " numParticles\n";
         return 1;
     }
     previousFrameTime = std::chrono::high_resolution_clock::now();
     int numParticles = std::atoi(argv[1]);
+
+
     std::random_device rd;
     std::default_random_engine generator(rd());
     std::uniform_real_distribution<float> randomFloatX(-WINDOW_WIDTH / 2 + PARTICLE_RADIUS, WINDOW_WIDTH / 2 - PARTICLE_RADIUS);
@@ -110,17 +113,30 @@ int main(int argc, char** argv) {
     std::uniform_real_distribution<float> randomVelocity(-10.0f, 10.0f);
     std::uniform_real_distribution<float> randomColor(0.0f, 1.0f);
 
-    #pragma omp parallel for
-    for (int i = 0; i < numParticles; i++) {
-        float vx = randomVelocity(generator);
-        float vy = randomVelocity(generator);
-        float x = randomFloatX(generator);
-        float y = randomFloatY(generator);
-        float r = randomColor(generator);
-        float g = randomColor(generator);
-        float b = randomColor(generator);
-        particles.emplace_back(vx, vy, x, y, r, g, b);
+    #pragma omp parallel
+    {
+        std::vector<Particle> threadParticles;
+
+        #pragma omp for
+        for (int i = 0; i < numParticles; i++) {
+            float vx = randomVelocity(generator);
+            float vy = randomVelocity(generator);
+            float x = randomFloatX(generator);
+            float y = randomFloatY(generator);
+            float r = randomColor(generator);
+            float g = randomColor(generator);
+            float b = randomColor(generator);
+            threadParticles.emplace_back(vx, vy, x, y, r, g, b);
+        }
+
+        #pragma omp critical
+        {
+            particles.insert(particles.end(), threadParticles.begin(), threadParticles.end());
+        }
     }
+
+
+
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
     glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
