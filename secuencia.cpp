@@ -77,17 +77,17 @@ void UpdateParticles(int value) {
         if (particles[i].posY < -WINDOW_HEIGHT / 2 + PARTICLE_RADIUS || particles[i].posY > WINDOW_HEIGHT / 2 - PARTICLE_RADIUS) {
             particles[i].velocityY = -particles[i].velocityY;
         }
-        for (size_t j = i + 1; j < particles.size(); j++) {
-            float dx = particles[j].posX - particles[i].posX;
-            float dy = particles[j].posY - particles[i].posY;
-            float distance = std::sqrt(dx * dx + dy * dy);
-            if (distance < PARTICLE_RADIUS * 2) {
-                particles[i].velocityX = -particles[i].velocityX;
-                particles[i].velocityY = -particles[i].velocityY;
-                particles[j].velocityX = -particles[j].velocityX;
-                particles[j].velocityY = -particles[j].velocityY;
-            }
-        }
+        // for (size_t j = i + 1; j < particles.size(); j++) {
+        //     float dx = particles[j].posX - particles[i].posX;
+        //     float dy = particles[j].posY - particles[i].posY;
+        //     float distance = std::sqrt(dx * dx + dy * dy);
+        //     if (distance < PARTICLE_RADIUS * 2) {
+        //         particles[i].velocityX = -particles[i].velocityX;
+        //         particles[i].velocityY = -particles[i].velocityY;
+        //         particles[j].velocityX = -particles[j].velocityX;
+        //         particles[j].velocityY = -particles[j].velocityY;
+        //     }
+        // }
     }
     glutPostRedisplay();
     glutTimerFunc(16, UpdateParticles, 0);
