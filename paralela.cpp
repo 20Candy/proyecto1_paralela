@@ -6,7 +6,6 @@
 #include <vector>
 #include <random>
 #include <chrono>
-#include <omp.h>
 
 const int WINDOW_WIDTH = 1920;
 const int WINDOW_HEIGHT = 1080;
@@ -50,8 +49,7 @@ void DrawParticles() {
     for (char c : fpsText) {
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, c);
     }
- 
-    #pragma omp parallel for
+
     for (const Particle& particle : particles) {
         glColor3f(particle.colorR, particle.colorG, particle.colorB);
         glBegin(GL_TRIANGLE_FAN);
@@ -103,10 +101,6 @@ int main(int argc, char** argv) {
         std::cout << "Usage: " << argv[0] << " numParticles\n";
         return 1;
     }
-
-    int numThreads = 4;
-    omp_set_num_threads(numThreads);
-
     previousFrameTime = std::chrono::high_resolution_clock::now();
     int numParticles = std::atoi(argv[1]);
     std::random_device rd;
@@ -115,7 +109,7 @@ int main(int argc, char** argv) {
     std::uniform_real_distribution<float> randomFloatY(-WINDOW_HEIGHT / 2 + PARTICLE_RADIUS, WINDOW_HEIGHT / 2 - PARTICLE_RADIUS);
     std::uniform_real_distribution<float> randomVelocity(-10.0f, 10.0f);
     std::uniform_real_distribution<float> randomColor(0.0f, 1.0f);
- 
+
     #pragma omp parallel for
     for (int i = 0; i < numParticles; i++) {
         float vx = randomVelocity(generator);
@@ -125,8 +119,6 @@ int main(int argc, char** argv) {
         float r = randomColor(generator);
         float g = randomColor(generator);
         float b = randomColor(generator);
-
-        #pragma omp critical
         particles.emplace_back(vx, vy, x, y, r, g, b);
     }
     glutInit(&argc, argv);
