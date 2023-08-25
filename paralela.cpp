@@ -1,16 +1,14 @@
-//Proyecto 1 Paralela
-
 #include <iostream>
 #include <cmath>
 #include <GL/glut.h>
 #include <vector>
 #include <random>
 #include <chrono>
+#include <omp.h>
 
 const int WINDOW_WIDTH = 1920;
 const int WINDOW_HEIGHT = 1080;
 const float PARTICLE_RADIUS = 20.0f;
-const float FRICTION = 0.9f;
 
 struct Particle {
     float velocityX;
@@ -78,33 +76,18 @@ void UpdateParticles(int value) {
         if (particles[i].posY < -WINDOW_HEIGHT / 2 + PARTICLE_RADIUS || particles[i].posY > WINDOW_HEIGHT / 2 - PARTICLE_RADIUS) {
             particles[i].velocityY = -particles[i].velocityY;
         }
-
-        
-        // for (size_t j = i + 1; j < particles.size(); j++) {
-        //     float dx = particles[j].posX - particles[i].posX;
-        //     float dy = particles[j].posY - particles[i].posY;
-        //     float distance = std::sqrt(dx * dx + dy * dy);
-        //     if (distance < PARTICLE_RADIUS * 2) {
-        //         particles[i].velocityX = -particles[i].velocityX;
-        //         particles[i].velocityY = -particles[i].velocityY;
-        //         particles[j].velocityX = -particles[j].velocityX;
-        //         particles[j].velocityY = -particles[j].velocityY;
-        //     }
-        // }
     }
     glutPostRedisplay();
     glutTimerFunc(16, UpdateParticles, 0);
 }
 
 int main(int argc, char** argv) {
-
     if (argc < 2) {
         std::cout << "Usage: " << argv[0] << " numParticles\n";
         return 1;
     }
     previousFrameTime = std::chrono::high_resolution_clock::now();
     int numParticles = std::atoi(argv[1]);
-
 
     std::random_device rd;
     std::default_random_engine generator(rd());
@@ -134,8 +117,6 @@ int main(int argc, char** argv) {
             particles.insert(particles.end(), threadParticles.begin(), threadParticles.end());
         }
     }
-
-
 
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
