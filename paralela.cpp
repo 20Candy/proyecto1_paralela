@@ -104,17 +104,17 @@ void UpdateParticles(int value) {
     #pragma omp parallel
     {
         #pragma omp for
-        for_each(particles.begin(), particles.end(), [](Particle& particle) {
-            particle.posX += particle.velocityX;
-            particle.posY += particle.velocityY;
+        for (size_t i = 0; i < particles.size(); i++) {
+            particles[i].posX += particles[i].velocityX;
+            particles[i].posY += particles[i].velocityY;
 
-            if (particle.posX < -WINDOW_WIDTH / 2 + PARTICLE_RADIUS || particle.posX > WINDOW_WIDTH / 2 - PARTICLE_RADIUS) {
-                particle.velocityX = -particle.velocityX;
+            if (particles[i].posX < -WINDOW_WIDTH / 2 + PARTICLE_RADIUS || particles[i].posX > WINDOW_WIDTH / 2 - PARTICLE_RADIUS) {
+                particles[i].velocityX = -particles[i].velocityX;
             }
-            if (particle.posY < -WINDOW_HEIGHT / 2 + PARTICLE_RADIUS || particle.posY > WINDOW_HEIGHT / 2 - PARTICLE_RADIUS) {
-                particle.velocityY = -particle.velocityY;
+            if (particles[i].posY < -WINDOW_HEIGHT / 2 + PARTICLE_RADIUS || particles[i].posY > WINDOW_HEIGHT / 2 - PARTICLE_RADIUS) {
+                particles[i].velocityY = -particles[i].velocityY;
             }
-        });
+        }
     }
 
     glutPostRedisplay();
