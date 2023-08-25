@@ -65,11 +65,45 @@ void DrawParticles() {
     glutSwapBuffers();
 }
 
+int numParticlesToCreate = 0;
+int particlesCreated = 0;
+bool creationFinished = false;
+
+void CreateParticle() {
+    if (particlesCreated < numParticlesToCreate) {
+        std::random_device rd;
+        std::default_random_engine generator(rd());
+        std::uniform_real_distribution<float> randomFloatX(-WINDOW_WIDTH / 2 + PARTICLE_RADIUS, WINDOW_WIDTH / 2 - PARTICLE_RADIUS);
+        std::uniform_real_distribution<float> randomFloatY(-WINDOW_HEIGHT / 2 + PARTICLE_RADIUS, WINDOW_HEIGHT / 2 - PARTICLE_RADIUS);
+        std::uniform_real_distribution<float> randomVelocity(-10.0f, 10.0f);
+        std::uniform_real_distribution<float> randomColor(0.0f, 1.0f);
+        float vx = randomVelocity(generator);
+        float vy = randomVelocity(generator);
+        float x = randomFloatX(generator);
+        float y = randomFloatY(generator);
+        float r = randomColor(generator);
+        float g = randomColor(generator);
+        float b = randomColor(generator);
+        particles.emplace_back(vx, vy, x, y, r, g, b);
+        particlesCreated++;
+    } else {
+        if (!creationFinished) {
+            creationFinished = true;
+            std::chrono::high_resolution_clock::time_point endTime = std::chrono::high_resolution_clock::now();
+            float totalTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - previousFrameTime).count() / 1000.0f;
+            std::cout << "Tiempo total: " << totalTime << " segundos" << std::endl;
+        }
+    }
+}
+
 void UpdateParticles(int value) {
+    CreateParticle();
+
     #pragma omp parallel for
     for (size_t i = 0; i < particles.size(); i++) {
         particles[i].posX += particles[i].velocityX;
         particles[i].posY += particles[i].velocityY;
+
         if (particles[i].posX < -WINDOW_WIDTH / 2 + PARTICLE_RADIUS || particles[i].posX > WINDOW_WIDTH / 2 - PARTICLE_RADIUS) {
             particles[i].velocityX = -particles[i].velocityX;
         }
@@ -77,6 +111,7 @@ void UpdateParticles(int value) {
             particles[i].velocityY = -particles[i].velocityY;
         }
     }
+
     glutPostRedisplay();
     glutTimerFunc(16, UpdateParticles, 0);
 }
@@ -87,37 +122,7 @@ int main(int argc, char** argv) {
         return 1;
     }
     previousFrameTime = std::chrono::high_resolution_clock::now();
-    int numParticles = std::atoi(argv[1]);
-
-    std::random_device rd;
-    std::default_random_engine generator(rd());
-    std::uniform_real_distribution<float> randomFloatX(-WINDOW_WIDTH / 2 + PARTICLE_RADIUS, WINDOW_WIDTH / 2 - PARTICLE_RADIUS);
-    std::uniform_real_distribution<float> randomFloatY(-WINDOW_HEIGHT / 2 + PARTICLE_RADIUS, WINDOW_HEIGHT / 2 - PARTICLE_RADIUS);
-    std::uniform_real_distribution<float> randomVelocity(-10.0f, 10.0f);
-    std::uniform_real_distribution<float> randomColor(0.0f, 1.0f);
-
-    #pragma omp parallel
-    {
-        std::vector<Particle> threadParticles;
-
-        #pragma omp for
-        for (int i = 0; i < numParticles; i++) {
-            float vx = randomVelocity(generator);
-            float vy = randomVelocity(generator);
-            float x = randomFloatX(generator);
-            float y = randomFloatY(generator);
-            float r = randomColor(generator);
-            float g = randomColor(generator);
-            float b = randomColor(generator);
-            threadParticles.emplace_back(vx, vy, x, y, r, g, b);
-        }
-
-        #pragma omp critical
-        {
-            particles.insert(particles.end(), threadParticles.begin(), threadParticles.end());
-        }
-    }
-
+    numParticlesToCreate = std::atoi(argv[1]);
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
     glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
