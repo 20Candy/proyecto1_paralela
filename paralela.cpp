@@ -4,6 +4,7 @@
 #include <vector>
 #include <random>
 #include <chrono>
+#include <omp.h>
 
 const int WINDOW_WIDTH = 1920;
 const int WINDOW_HEIGHT = 1080;
@@ -97,9 +98,12 @@ void CreateParticle() {
 
 void UpdateParticles(int value) {
     CreateParticle();
+
+    #pragma omp parallel for
     for (size_t i = 0; i < particles.size(); i++) {
         particles[i].posX += particles[i].velocityX;
         particles[i].posY += particles[i].velocityY;
+
         if (particles[i].posX < -WINDOW_WIDTH / 2 + PARTICLE_RADIUS || particles[i].posX > WINDOW_WIDTH / 2 - PARTICLE_RADIUS) {
             particles[i].velocityX = -particles[i].velocityX;
         }
@@ -107,6 +111,7 @@ void UpdateParticles(int value) {
             particles[i].velocityY = -particles[i].velocityY;
         }
     }
+
     glutPostRedisplay();
     glutTimerFunc(16, UpdateParticles, 0);
 }
