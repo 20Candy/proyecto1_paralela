@@ -1,5 +1,3 @@
-//Proyecto 1 Paralela
-
 #include <iostream>
 #include <cmath>
 #include <GL/glut.h>
@@ -10,7 +8,6 @@
 const int WINDOW_WIDTH = 1920;
 const int WINDOW_HEIGHT = 1080;
 const float PARTICLE_RADIUS = 20.0f;
-const float FRICTION = 0.9f;
 
 struct Particle {
     float velocityX;
@@ -67,7 +64,39 @@ void DrawParticles() {
     glutSwapBuffers();
 }
 
+int numParticlesToCreate = 0;
+int particlesCreated = 0;
+bool creationFinished = false;
+
+void CreateParticle() {
+    if (particlesCreated < numParticlesToCreate) {
+        std::random_device rd;
+        std::default_random_engine generator(rd());
+        std::uniform_real_distribution<float> randomFloatX(-WINDOW_WIDTH / 2 + PARTICLE_RADIUS, WINDOW_WIDTH / 2 - PARTICLE_RADIUS);
+        std::uniform_real_distribution<float> randomFloatY(-WINDOW_HEIGHT / 2 + PARTICLE_RADIUS, WINDOW_HEIGHT / 2 - PARTICLE_RADIUS);
+        std::uniform_real_distribution<float> randomVelocity(-10.0f, 10.0f);
+        std::uniform_real_distribution<float> randomColor(0.0f, 1.0f);
+        float vx = randomVelocity(generator);
+        float vy = randomVelocity(generator);
+        float x = randomFloatX(generator);
+        float y = randomFloatY(generator);
+        float r = randomColor(generator);
+        float g = randomColor(generator);
+        float b = randomColor(generator);
+        particles.emplace_back(vx, vy, x, y, r, g, b);
+        particlesCreated++;
+    } else {
+        if (!creationFinished) {
+            creationFinished = true;
+            std::chrono::high_resolution_clock::time_point endTime = std::chrono::high_resolution_clock::now();
+            float totalTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - previousFrameTime).count() / 1000.0f;
+            std::cout << "Tiempo total: " << totalTime << " segundos" << std::endl;
+        }
+    }
+}
+
 void UpdateParticles(int value) {
+    CreateParticle();
     for (size_t i = 0; i < particles.size(); i++) {
         particles[i].posX += particles[i].velocityX;
         particles[i].posY += particles[i].velocityY;
@@ -77,17 +106,6 @@ void UpdateParticles(int value) {
         if (particles[i].posY < -WINDOW_HEIGHT / 2 + PARTICLE_RADIUS || particles[i].posY > WINDOW_HEIGHT / 2 - PARTICLE_RADIUS) {
             particles[i].velocityY = -particles[i].velocityY;
         }
-        // for (size_t j = i + 1; j < particles.size(); j++) {
-        //     float dx = particles[j].posX - particles[i].posX;
-        //     float dy = particles[j].posY - particles[i].posY;
-        //     float distance = std::sqrt(dx * dx + dy * dy);
-        //     if (distance < PARTICLE_RADIUS * 2) {
-        //         particles[i].velocityX = -particles[i].velocityX;
-        //         particles[i].velocityY = -particles[i].velocityY;
-        //         particles[j].velocityX = -particles[j].velocityX;
-        //         particles[j].velocityY = -particles[j].velocityY;
-        //     }
-        // }
     }
     glutPostRedisplay();
     glutTimerFunc(16, UpdateParticles, 0);
@@ -99,23 +117,7 @@ int main(int argc, char** argv) {
         return 1;
     }
     previousFrameTime = std::chrono::high_resolution_clock::now();
-    int numParticles = std::atoi(argv[1]);
-    std::random_device rd;
-    std::default_random_engine generator(rd());
-    std::uniform_real_distribution<float> randomFloatX(-WINDOW_WIDTH / 2 + PARTICLE_RADIUS, WINDOW_WIDTH / 2 - PARTICLE_RADIUS);
-    std::uniform_real_distribution<float> randomFloatY(-WINDOW_HEIGHT / 2 + PARTICLE_RADIUS, WINDOW_HEIGHT / 2 - PARTICLE_RADIUS);
-    std::uniform_real_distribution<float> randomVelocity(-10.0f, 10.0f);
-    std::uniform_real_distribution<float> randomColor(0.0f, 1.0f);
-    for (int i = 0; i < numParticles; i++) {
-        float vx = randomVelocity(generator);
-        float vy = randomVelocity(generator);
-        float x = randomFloatX(generator);
-        float y = randomFloatY(generator);
-        float r = randomColor(generator);
-        float g = randomColor(generator);
-        float b = randomColor(generator);
-        particles.emplace_back(vx, vy, x, y, r, g, b);
-    }
+    numParticlesToCreate = std::atoi(argv[1]);
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
     glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
