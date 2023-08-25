@@ -4,6 +4,8 @@
 #include <vector>
 #include <random>
 #include <chrono>
+#include <algorithm>  // Agregado para std::for_each
+#include <functional> // Agregado para std::function
 #include <omp.h>
 
 const int WINDOW_WIDTH = 1920;
