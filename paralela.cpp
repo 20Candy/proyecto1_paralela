@@ -69,23 +69,24 @@ int numParticlesToCreate = 0;
 int particlesCreated = 0;
 bool creationFinished = false;
 
-void CreateParticle() {
+void CreateParticle(std::vector<float>& randomXs, std::vector<float>& randomYs,
+                    std::vector<float>& randomVelocitiesX, std::vector<float>& randomVelocitiesY,
+                    std::vector<float>& randomColorsR, std::vector<float>& randomColorsG,
+                    std::vector<float>& randomColorsB) {
     if (particlesCreated < numParticlesToCreate) {
-        unsigned int seed = std::chrono::system_clock::now().time_since_epoch().count() + particlesCreated;
-        std::default_random_engine generator(seed);
-        std::uniform_real_distribution<float> randomFloatX(-WINDOW_WIDTH / 2 + PARTICLE_RADIUS, WINDOW_WIDTH / 2 - PARTICLE_RADIUS);
-        std::uniform_real_distribution<float> randomFloatY(-WINDOW_HEIGHT / 2 + PARTICLE_RADIUS, WINDOW_HEIGHT / 2 - PARTICLE_RADIUS);
-        std::uniform_real_distribution<float> randomVelocity(-10.0f, 10.0f);
-        std::uniform_real_distribution<float> randomColor(0.0f, 1.0f);
-        float vx = randomVelocity(generator);
-        float vy = randomVelocity(generator);
-        float x = randomFloatX(generator);
-        float y = randomFloatY(generator);
-        float r = randomColor(generator);
-        float g = randomColor(generator);
-        float b = randomColor(generator);
-        particles.emplace_back(vx, vy, x, y, r, g, b);
-        particlesCreated++;
+        #pragma omp parallel for
+        for (int i = 0; i < numParticlesToCreate; i++) {
+            float vx = randomVelocitiesX[i];
+            float vy = randomVelocitiesY[i];
+            float x = randomXs[i];
+            float y = randomYs[i];
+            float r = randomColorsR[i];
+            float g = randomColorsG[i];
+            float b = randomColorsB[i];
+
+            particles.emplace_back(vx, vy, x, y, r, g, b);
+        }
+        particlesCreated += numParticlesToCreate;
     } else {
         if (!creationFinished) {
             creationFinished = true;
@@ -96,8 +97,11 @@ void CreateParticle() {
     }
 }
 
-void UpdateParticles(int value) {
-    CreateParticle();
+void UpdateParticles(int value, std::vector<float>& randomXs, std::vector<float>& randomYs,
+                    std::vector<float>& randomVelocitiesX, std::vector<float>& randomVelocitiesY,
+                    std::vector<float>& randomColorsR, std::vector<float>& randomColorsG,
+                    std::vector<float>& randomColorsB) {
+    CreateParticle(randomXs, randomYs, randomVelocitiesX, randomVelocitiesY, randomColorsR, randomColorsG, randomColorsB);
 
     #pragma omp parallel for
     for (size_t i = 0; i < particles.size(); i++) {
@@ -123,6 +127,33 @@ int main(int argc, char** argv) {
     }
     previousFrameTime = std::chrono::high_resolution_clock::now();
     numParticlesToCreate = std::atoi(argv[1]);
+
+    // Generate all random values in the main thread
+    std::random_device rd;
+    std::default_random_engine generator(rd());
+    std::uniform_real_distribution<float> randomFloatX(-WINDOW_WIDTH / 2 + PARTICLE_RADIUS, WINDOW_WIDTH / 2 - PARTICLE_RADIUS);
+    std::uniform_real_distribution<float> randomFloatY(-WINDOW_HEIGHT / 2 + PARTICLE_RADIUS, WINDOW_HEIGHT / 2 - PARTICLE_RADIUS);
+    std::uniform_real_distribution<float> randomVelocity(-10.0f, 10.0f);
+    std::uniform_real_distribution<float> randomColor(0.0f, 1.0f);
+
+    std::vector<float> randomXs(numParticlesToCreate);
+    std::vector<float> randomYs(numParticlesToCreate);
+    std::vector<float> randomVelocitiesX(numParticlesToCreate);
+    std::vector<float> randomVelocitiesY(numParticlesToCreate);
+    std::vector<float> randomColorsR(numParticlesToCreate);
+    std::vector<float> randomColorsG(numParticlesToCreate);
+    std::vector<float> randomColorsB(numParticlesToCreate);
+
+    for (int i = 0; i < numParticlesToCreate; i++) {
+        randomXs[i] = randomFloatX(generator);
+        randomYs[i] = randomFloatY(generator);
+        randomVelocitiesX[i] = randomVelocity(generator);
+        randomVelocitiesY[i] = randomVelocity(generator);
+        randomColorsR[i] = randomColor(generator);
+        randomColorsG[i] = randomColor(generator);
+        randomColorsB[i] = randomColor(generator);
+    }
+
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
     glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
