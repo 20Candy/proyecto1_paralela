@@ -71,8 +71,8 @@ bool creationFinished = false;
 
 void CreateParticle() {
     if (particlesCreated < numParticlesToCreate) {
-        std::random_device rd;
-        std::default_random_engine generator(rd());
+        unsigned int seed = std::chrono::system_clock::now().time_since_epoch().count() + particlesCreated;
+        std::default_random_engine generator(seed);
         std::uniform_real_distribution<float> randomFloatX(-WINDOW_WIDTH / 2 + PARTICLE_RADIUS, WINDOW_WIDTH / 2 - PARTICLE_RADIUS);
         std::uniform_real_distribution<float> randomFloatY(-WINDOW_HEIGHT / 2 + PARTICLE_RADIUS, WINDOW_HEIGHT / 2 - PARTICLE_RADIUS);
         std::uniform_real_distribution<float> randomVelocity(-10.0f, 10.0f);
