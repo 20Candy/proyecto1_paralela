@@ -8,7 +8,7 @@
 
 const int WINDOW_WIDTH = 1920;
 const int WINDOW_HEIGHT = 1080;
-const float PARTICLE_RADIUS = 20.0f;
+const float PARTICLE_RADIUS = 60.0f;
 
 struct Particle {
     float velocityX;
@@ -38,19 +38,16 @@ void CreateParticle() {
     // Tomar el tiempo de inicio
     std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now();
 
-    for (int i = 0; i < numParticlesToCreate; i++)
-    {
-        std::random_device rd;
-        std::default_random_engine generator(rd());
+    std::random_device rd;
+    std::default_random_engine generator(rd());
+    std::uniform_real_distribution<float> randomRadius(20.0f, PARTICLE_RADIUS);
+    std::uniform_real_distribution<float> randomFloatX(-WINDOW_WIDTH / 2 + PARTICLE_RADIUS, WINDOW_WIDTH / 2 - PARTICLE_RADIUS);
+    std::uniform_real_distribution<float> randomFloatY(-WINDOW_HEIGHT / 2 + PARTICLE_RADIUS, WINDOW_HEIGHT / 2 - PARTICLE_RADIUS);
+    std::uniform_real_distribution<float> randomVelocity(-10.0f, 10.0f);
+    std::uniform_real_distribution<float> randomColor(0.0f, 1.0f);
 
-        std::uniform_real_distribution<float> randomRadius(20.0f, 60.0f);   // Radio aleatorio
+    for (int i = 0; i < numParticlesToCreate; i++) {
         float radius = randomRadius(generator);
-
-        std::uniform_real_distribution<float> randomFloatX(-WINDOW_WIDTH / 2 + radius, WINDOW_WIDTH / 2 - radius);
-        std::uniform_real_distribution<float> randomFloatY(-WINDOW_HEIGHT / 2 + radius, WINDOW_HEIGHT / 2 - radius);
-        std::uniform_real_distribution<float> randomVelocity(-10.0f, 10.0f);
-        std::uniform_real_distribution<float> randomColor(0.0f, 1.0f);
-
         float vx = randomVelocity(generator);
         float vy = randomVelocity(generator);
         float x = randomFloatX(generator);

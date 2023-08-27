@@ -9,7 +9,7 @@
 
 const int WINDOW_WIDTH = 1920;
 const int WINDOW_HEIGHT = 1080;
-const float PARTICLE_RADIUS = 20.0f;
+const float PARTICLE_RADIUS = 60.0f;
 
 struct Particle {
     float velocityX;
@@ -22,14 +22,11 @@ struct Particle {
     float color_change;
     float radius;
 
-    Particle()
-        : velocityX(0.0f), velocityY(0.0f), posX(0.0f), posY(0.0f), colorR(1.0f), colorG(1.0f), colorB(1.0f), color_change(0.0f), radius(1.0f) {}
-
     Particle(float vx, float vy, float x, float y, float r, float g, float b, float ch, float rad)
         : velocityX(vx), velocityY(vy), posX(x), posY(y), colorR(r), colorG(g), colorB(b), color_change(ch), radius(rad) {}
 };
 
-std::vector<Particle> particles (10001);
+std::vector<Particle> particles;
 
 std::chrono::high_resolution_clock::time_point previousFrameTime;
 int frameCount = 0;
@@ -42,36 +39,59 @@ void CreateParticle() {
     // Tomar el tiempo de inicio
     std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now();
 
-    #pragma omp parallel for
-    for (int i = 0; i < numParticlesToCreate; i++)
+    std::random_device rd;
+    std::default_random_engine generator(rd());
+    std::uniform_real_distribution<float> randomRadius(20.0f, PARTICLE_RADIUS);
+    std::uniform_real_distribution<float> randomFloatX(-WINDOW_WIDTH / 2 + PARTICLE_RADIUS, WINDOW_WIDTH / 2 - PARTICLE_RADIUS);
+    std::uniform_real_distribution<float> randomFloatY(-WINDOW_HEIGHT / 2 + PARTICLE_RADIUS, WINDOW_HEIGHT / 2 - PARTICLE_RADIUS);
+    std::uniform_real_distribution<float> randomVelocity(-10.0f, 10.0f);
+    std::uniform_real_distribution<float> randomColor(0.0f, 1.0f);
+
+    int num_hilos = omp_get_max_threads();                                  // Número de hilos
+    int nums_bloque = ceil((double)numParticlesToCreate / num_hilos);      // Números por bloque
+
+    std::vector<std::vector<Particle>> localParticles(num_hilos);
+
+    #pragma omp parallel
     {
-        std::random_device rd;
-        std::default_random_engine generator(rd());
+        int ID = omp_get_thread_num();                  // ID del hilo
+        int inicio = ID * nums_bloque;                  // Inicio del bloque
+        int fin = std::min(inicio + nums_bloque, N);    // Fin del bloque
 
-        std::uniform_real_distribution<float> randomRadius(20.0f, 60.0f);   // Radio aleatorio
-        float radius = randomRadius(generator);
+        for (int i = inicio; i < fin; ++i) {
+            float radius = randomRadius(generator);
+            float vx = randomVelocity(generator);
+            float vy = randomVelocity(generator);
+            float x = randomFloatX(generator);
+            float y = randomFloatY(generator);
+            float r = randomColor(generator);
+            float g = randomColor(generator);
+            float b = randomColor(generator);
 
-        std::uniform_real_distribution<float> randomFloatX(-WINDOW_WIDTH / 2 + radius, WINDOW_WIDTH / 2 - radius);
-        std::uniform_real_distribution<float> randomFloatY(-WINDOW_HEIGHT / 2 + radius, WINDOW_HEIGHT / 2 - radius);
-        std::uniform_real_distribution<float> randomVelocity(-10.0f, 10.0f);
-        std::uniform_real_distribution<float> randomColor(0.0f, 1.0f);
+            localParticles[ID].emplace_back(vx, vy, x, y, r, g, b, 0.0f, radius);
+        }
 
-        float vx = randomVelocity(generator);
-        float vy = randomVelocity(generator);
-        float x = randomFloatX(generator);
-        float y = randomFloatY(generator);
-        float r = randomColor(generator);
-        float g = randomColor(generator);
-        float b = randomColor(generator);
+        #pragma omp barrier             // Esperar a que todos los hilos terminen de
+                                        // llenar los buffers locales (con numeros ordenados)
 
-        particles[i] = Particle(vx, vy, x, y, r, g, b, 0.0f, radius);
-        
-    } 
+        #pragma omp master              // Solo el hilo master escribe a particulas
+        {
+            for (const auto& local : localParticles) {
+                particles.insert(particles.end(), local.begin(), local.end());
+            }
+        }
+    }
     
     std::chrono::high_resolution_clock::time_point endTime = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> totalTime = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
     std::cout << "Tiempo de creación de partículas: " << totalTime.count() << " segundos\n";
 
+}
+
+void AggregateParticles(std::vector<Particle>& particles, const std::vector<std::vector<Particle>>& localParticles) {
+    for (const auto& local : localParticles) {
+        particles.insert(particles.end(), local.begin(), local.end());
+    }
 }
 
 void DrawParticles() {
@@ -192,7 +212,7 @@ int main(int argc, char** argv) {
     glMatrixMode(GL_MODELVIEW);                         // Establece la matriz de vista del modelo
     glLoadIdentity();                                   // Carga la matriz identidad
 
-    CreateParticle();                                   // Inicia la simulación de partículas
+    CreateParticle();                                   // Crea las partículas
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);               // Establece el color de fondo
     glutDisplayFunc(DrawParticles);                     // Establece la función de dibujo
