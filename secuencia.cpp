@@ -100,40 +100,34 @@ void DrawParticles() {
         }
         glEnd();
 
-        // Dibujar ojo 1
-        glColor3f(0.0f, 0.0f, 0.0f); // Color negro para los ojos
+        // Dibujar un circulo negro de la mitad del radio
+        glColor3f(0.0f,0.0f,0.0f);
         glBegin(GL_TRIANGLE_FAN);
-        const int numEyeSegments = 16;
-        float eyeRadius = particles[i].radius * 0.2f;
-        for (int j = 0; j <= numEyeSegments; j++) {
-            float angle = j * 2.0f * M_PI / numEyeSegments;
-            float dx = eyeRadius * std::cos(angle);
-            float dy = eyeRadius * std::sin(angle);
-            glVertex2f(particles[i].posX - eyeRadius * 0.5f + dx, particles[i].posY + eyeRadius * 0.3f + dy);
+        glVertex2f(particles[i].posX, particles[i].posY);
+        const int numSegments = 32;
+        for (int j = 0; j <= numSegments; j++) {
+            float angle = j * 2.0f * M_PI / numSegments;
+            float dx = particles[i].radius/2 * std::cos(angle);
+            float dy = particles[i].radius/2 * std::sin(angle);
+            glVertex2f(particles[i].posX + dx, particles[i].posY + dy);
         }
         glEnd();
 
-        // Dibujar ojo 2
+        // Dibujar el un circulo de color adentro del negro
+        glColor3f(particles[i].colorR, particles[i].colorG, particles[i].colorB);
         glBegin(GL_TRIANGLE_FAN);
-        for (int j = 0; j <= numEyeSegments; j++) {
-            float angle = j * 2.0f * M_PI / numEyeSegments;
-            float dx = eyeRadius * std::cos(angle);
-            float dy = eyeRadius * std::sin(angle);
-            glVertex2f(particles[i].posX + eyeRadius * 0.5f + dx, particles[i].posY + eyeRadius * 0.3f + dy);
+        glVertex2f(particles[i].posX, particles[i].posY);
+        const int numSegments = 64;
+        for (int j = 0; j <= numSegments; j++) {
+            float angle = j * 2.0f * M_PI / numSegments;
+            float dx = particles[i].radius/4 * std::cos(angle);
+            float dy = particles[i].radius/4 * std::sin(angle);
+            glVertex2f(particles[i].posX + dx, particles[i].posY + dy);
         }
         glEnd();
 
-        // Dibujar la boca
-        glColor3f(1.0f, 0.0f, 0.0f);
-        glBegin(GL_LINE_STRIP);
-        const int numMouthSegments = 32;
-        for (int j = 0; j <= numMouthSegments; j++) {
-            float angle = -M_PI + j * M_PI / numMouthSegments;
-            float dx = particles[i].radius * 0.6f * std::cos(angle);
-            float dy = particles[i].radius * 0.4f * std::sin(angle);
-            glVertex2f(particles[i].posX + dx, particles[i].posY - particles[i].radius * 0.4f + dy);
-        }
-        glEnd();
+
+
     }
 
     glutSwapBuffers();
