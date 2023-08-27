@@ -63,6 +63,9 @@ void CreateParticle() {
         particles.emplace_back(vx, vy, x, y, r, g, b, 0.0f, radius);
         
     } 
+
+    // imprimit el len de particles
+    std::cout << "len particles: " << particles.size() << std::endl;
     
     creationFinished = true;
     std::chrono::high_resolution_clock::time_point endTime = std::chrono::high_resolution_clock::now();
@@ -119,7 +122,7 @@ void DrawParticles() {
         glEnd();
 
         // Dibujar el un circulo de color adentro del negro
-        glColor3f((particles[i].colorR)/10, (particles[i].colorG)/10, (particles[i].colorB)/10);
+        glColor3f((particles[i].colorR)/2, (particles[i].colorG)/2, (particles[i].colorB)/2);
         glBegin(GL_TRIANGLE_FAN);
         glVertex2f(particles[i].posX, particles[i].posY);
         const int numSegments3 = 64;
