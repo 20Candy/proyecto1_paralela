@@ -79,7 +79,7 @@ void CreateParticle() {
         std::random_device rd;
         std::default_random_engine generator(rd());
 
-        std::uniform_real_distribution<float> randomRadius(20.0f, 60.0f);   // Radio aleatorio
+        std::uniform_real_distribution<float> randomRadius(20.0f, 30.0f);   // Radio aleatorio
         float radius = randomRadius(generator);
 
         std::uniform_real_distribution<float> randomFloatX(-WINDOW_WIDTH / 2 + radius, WINDOW_WIDTH / 2 - radius);
