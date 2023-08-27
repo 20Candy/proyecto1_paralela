@@ -40,7 +40,7 @@ void CreateParticle() {
     double start_time = omp_get_wtime();
 
     for (int i = 0; i < numParticlesToCreate; i++) {
-        sstd::random_device rd;
+        std::random_device rd;
         std::mt19937 generator(rd());
         std::uniform_real_distribution<float> randomRadius(20.0f, PARTICLE_RADIUS);
         std::uniform_real_distribution<float> randomFloatX(-WINDOW_WIDTH / 2 + PARTICLE_RADIUS, WINDOW_WIDTH / 2 - PARTICLE_RADIUS);
