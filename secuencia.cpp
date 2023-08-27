@@ -39,7 +39,7 @@ void CreateParticle() {
     auto start_time = std::chrono::high_resolution_clock::now();
 
     std::random_device rd;
-    std::mt19937 generator(rd());
+    std::default_random_engine generator(rd());
 
     for (int i = 0; i < numParticlesToCreate; i++) {
         std::uniform_real_distribution<float> randomRadius(20.0f, PARTICLE_RADIUS);
