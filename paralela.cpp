@@ -93,7 +93,6 @@ void DrawParticles() {
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, c);
     }
 
-    #pragma omp parallel for
     for (size_t i = 0; i < particles.size(); i++) {
         // Dibujar el cuerpo (un círculo grande)
         glColor3f(particles[i].colorR, particles[i].colorG, particles[i].colorB);
