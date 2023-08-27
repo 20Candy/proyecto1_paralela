@@ -117,7 +117,7 @@ void UpdateParticles(int value) {
         std::random_device rd;
         std::default_random_engine generator(rd());
         std::uniform_real_distribution<float> randomColor(0.0f, 1.0f);
-        std::uniform_int_distribution<int> randomInt(2, 6);
+        std::uniform_int_distribution<int> randomInt(5, 10);
 
         particles[i].color_change += deltaTime;
         if (particles[i].color_change >= randomInt(generator)) { // Change color every random seconds
