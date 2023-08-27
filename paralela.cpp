@@ -71,12 +71,9 @@ void CreateParticle() {
             localParticles.emplace_back(vx, vy, x, y, r, g, b, 0.0f, radius);
         }
 
-        #pragma omp barrier             // Esperar a que todos los hilos terminen de
-                                        // llenar los buffers locales (con numeros ordenados)
-
-        #pragma omp master
+        #pragma omp critical
         {
-            particles.reserve(numParticlesToCreate);
+            particles.reserve(nums_bloque);
             for (const auto& local : localParticles) {
                 particles.push_back(local);
             }
