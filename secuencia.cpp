@@ -114,7 +114,7 @@ void DrawParticles() {
         glEnd();
 
         // Dibujar el un circulo de color adentro del negro
-        glColor3f(particles[i].colorR, particles[i].colorG, particles[i].colorB);
+        glColor3f((particles[i].colorR)/10, (particles[i].colorG)/10, (particles[i].colorB)/10);
         glBegin(GL_TRIANGLE_FAN);
         glVertex2f(particles[i].posX, particles[i].posY);
         const int numSegments3 = 64;
