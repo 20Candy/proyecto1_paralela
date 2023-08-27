@@ -37,7 +37,7 @@ bool creationFinished = false;
 
 void CreateParticle() {
     particles.resize(numParticlesToCreate);
-    
+
     // Tomar el tiempo de inicio
     std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now();
 
@@ -63,8 +63,7 @@ void CreateParticle() {
         float g = randomColor(generator);
         float b = randomColor(generator);
 
-        Particle newParticle(vx, vy, x, y, r, g, b, 0.0f, radius);
-        particles[i] = newParticle;
+        particles[i] = Particle(vx, vy, x, y, r, g, b, 0.0f, radius);
         
     } 
     
