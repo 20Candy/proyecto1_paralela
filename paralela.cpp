@@ -39,7 +39,7 @@ void CreateParticle() {
     // Obtenemos el tiempo de inicio
     auto start_time = std::chrono::high_resolution_clock::now();
 
-    #pragma omp parallel for schedule(static, 10)
+    #pragma omp parallel for
     for (int i = 0; i < numParticlesToCreate; i++) {
         std::random_device rd;
         std::default_random_engine generator(rd() + i);
