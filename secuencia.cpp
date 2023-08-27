@@ -29,7 +29,6 @@ std::vector<Particle> particles;
 std::chrono::high_resolution_clock::time_point previousFrameTime;
 int frameCount = 0;
 float fps = 0.0f;
-float deltaTime = 0.0f;
 
 void DrawParticles() {
     glClear(GL_COLOR_BUFFER_BIT);
@@ -37,10 +36,10 @@ void DrawParticles() {
     frameCount++;
     std::chrono::high_resolution_clock::time_point currentFrameTime = std::chrono::high_resolution_clock::now();
     float deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentFrameTime - previousFrameTime).count() / 1000.0f;
-
     if (deltaTime >= 1.0f) {
         fps = static_cast<float>(frameCount) / deltaTime;
         frameCount = 0;
+        previousFrameTime = currentFrameTime;
     }
 
     glColor3f(1.0f, 1.0f, 1.0f);
@@ -103,6 +102,9 @@ void CreateParticle() {
 
 void UpdateParticles(int value) {
     CreateParticle();
+
+    std::chrono::high_resolution_clock::time_point currentFrameTime = std::chrono::high_resolution_clock::now();
+    float deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentFrameTime - previousFrameTime).count() / 1000.0f;
 
     for (size_t i = 0; i < particles.size(); i++) {
         particles[i].posX += particles[i].velocityX;
