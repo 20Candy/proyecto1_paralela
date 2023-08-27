@@ -36,10 +36,10 @@ void DrawParticles() {
 
     frameCount++;
     std::chrono::high_resolution_clock::time_point currentFrameTime = std::chrono::high_resolution_clock::now();
-    float timeFPS = std::chrono::duration_cast<std::chrono::milliseconds>(currentFrameTime - previousFrameTime).count() / 1000.0f;
+    float deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentFrameTime - previousFrameTime).count() / 1000.0f;
 
-    if (timeFPS >= 1.0f) {
-        fps = static_cast<float>(frameCount) / timeFPS;
+    if (deltaTime >= 1.0f) {
+        fps = static_cast<float>(frameCount) / deltaTime;
         frameCount = 0;
     }
 
@@ -104,19 +104,17 @@ void CreateParticle() {
 void UpdateParticles(int value) {
     CreateParticle();
 
-    // Se actualiza el tiempo transcurrido entre frames
-    std::chrono::high_resolution_clock::time_point currentFrameTime = std::chrono::high_resolution_clock::now();
-    deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentFrameTime - previousFrameTime).count() / 1000.0f;
-
     for (size_t i = 0; i < particles.size(); i++) {
         particles[i].posX += particles[i].velocityX;
         particles[i].posY += particles[i].velocityY;
 
+        std::random_device rd;
+        std::default_random_engine generator(rd());
+        std::uniform_real_distribution<float> randomColor(0.0f, 1.0f);
+        std::uniform_int_distribution<int> randomInt(2, 6);
+
         particles[i].color_change += deltaTime;
-        if (particles[i].color_change >= 2.0f) { // Change color every 2 seconds
-            std::random_device rd;
-            std::default_random_engine generator(rd());
-            std::uniform_real_distribution<float> randomColor(0.0f, 1.0f);
+        if (particles[i].color_change >= randomInt(generator)) { // Change color every random seconds
             particles[i].colorR = randomColor(generator);
             particles[i].colorG = randomColor(generator);
             particles[i].colorB = randomColor(generator);
