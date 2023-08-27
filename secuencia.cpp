@@ -19,9 +19,10 @@ struct Particle {
     float colorG;
     float colorB;
     float color_change;
+    float radius;
 
-    Particle(float vx, float vy, float x, float y, float r, float g, float b)
-        : velocityX(vx), velocityY(vy), posX(x), posY(y), colorR(r), colorG(g), colorB(b), color_change(0.0f) {}
+    Particle(float vx, float vy, float x, float y, float r, float g, float b, float ch, float rad)
+        : velocityX(vx), velocityY(vy), posX(x), posY(y), colorR(r), colorG(g), colorB(b), color_change(ch), radius(rad) {}
 };
 
 std::vector<Particle> particles;
@@ -49,16 +50,18 @@ void DrawParticles() {
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, c);
     }
 
-    for (const Particle& particle : particles) {
-        glColor3f(particle.colorR, particle.colorG, particle.colorB);
+    for (size_t i = 0; i < particles.size(); i++){
+        glColor3f(particles[i].colorR, particles[i].colorG, particles[i].colorB);    // Accede a los colores de la partícula
         glBegin(GL_TRIANGLE_FAN);
-        glVertex2f(particle.posX, particle.posY);
+        glVertex2f(particles[i].posX, particles[i].posY);                           // Accede a su posición
+
         const int numSegments = 16;
+
         for (int i = 0; i <= numSegments; i++) {
             float angle = i * 2.0f * M_PI / numSegments;
-            float dx = PARTICLE_RADIUS * std::cos(angle);
-            float dy = PARTICLE_RADIUS * std::sin(angle);
-            glVertex2f(particle.posX + dx, particle.posY + dy);
+            float dx = particles[i].radius * std::cos(angle);
+            float dy = particles[i].radius * std::sin(angle);
+            glVertex2f(particles[i].posX + dx, particles[i].posY + dy);             // Dibuja la partícula
         }
         glEnd();
     }
@@ -75,10 +78,15 @@ void CreateParticle() {
     {
         std::random_device rd;
         std::default_random_engine generator(rd());
-        std::uniform_real_distribution<float> randomFloatX(-WINDOW_WIDTH / 2 + PARTICLE_RADIUS, WINDOW_WIDTH / 2 - PARTICLE_RADIUS);
-        std::uniform_real_distribution<float> randomFloatY(-WINDOW_HEIGHT / 2 + PARTICLE_RADIUS, WINDOW_HEIGHT / 2 - PARTICLE_RADIUS);
+
+        std::uniform_real_distribution<float> randomRadius(20.0f, 60.0f);   // Radio aleatorio
+        float radius = randomRadius(generator);
+
+        std::uniform_real_distribution<float> randomFloatX(-WINDOW_WIDTH / 2 + radius, WINDOW_WIDTH / 2 - radius);
+        std::uniform_real_distribution<float> randomFloatY(-WINDOW_HEIGHT / 2 + radius, WINDOW_HEIGHT / 2 - radius);
         std::uniform_real_distribution<float> randomVelocity(-10.0f, 10.0f);
         std::uniform_real_distribution<float> randomColor(0.0f, 1.0f);
+
         float vx = randomVelocity(generator);
         float vy = randomVelocity(generator);
         float x = randomFloatX(generator);
@@ -87,17 +95,13 @@ void CreateParticle() {
         float g = randomColor(generator);
         float b = randomColor(generator);
 
-        particles.emplace_back(vx, vy, x, y, r, g, b);
-        particles.back().color_change = 0.0f;
-        i++;
-
+        particles.emplace_back(vx, vy, x, y, r, g, b, 0.0f, radius);
     } 
     
     creationFinished = true;
     std::chrono::high_resolution_clock::time_point endTime = std::chrono::high_resolution_clock::now();
     float totalTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - previousFrameTime).count() / 1000.0f;
     std::cout << "Tiempo total: " << totalTime << " segundos" << std::endl;
-
 
 }
 
@@ -123,10 +127,10 @@ void UpdateParticles(int value) {
             particles[i].color_change = 0.0f;
         }
 
-        if (particles[i].posX < -WINDOW_WIDTH / 2 + PARTICLE_RADIUS || particles[i].posX > WINDOW_WIDTH / 2 - PARTICLE_RADIUS) {
+        if (particles[i].posX < -WINDOW_WIDTH / 2 + particles[i].radius || particles[i].posX > WINDOW_WIDTH / 2 - particles[i].radius) {
             particles[i].velocityX = -particles[i].velocityX;
         }
-        if (particles[i].posY < -WINDOW_HEIGHT / 2 + PARTICLE_RADIUS || particles[i].posY > WINDOW_HEIGHT / 2 - PARTICLE_RADIUS) {
+        if (particles[i].posY < -WINDOW_HEIGHT / 2 + particles[i].radius || particles[i].posY > WINDOW_HEIGHT / 2 - particles[i].radius) {
             particles[i].velocityY = -particles[i].velocityY;
         }
     }
