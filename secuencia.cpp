@@ -67,11 +67,12 @@ void DrawParticles() {
 }
 
 int numParticlesToCreate = 0;
-int particlesCreated = 0;
 bool creationFinished = false;
 
 void CreateParticle() {
-    if (particlesCreated < numParticlesToCreate) {
+
+    for (int i = 0; i < numParticlesToCreate; i++)
+    {
         std::random_device rd;
         std::default_random_engine generator(rd());
         std::uniform_real_distribution<float> randomFloatX(-WINDOW_WIDTH / 2 + PARTICLE_RADIUS, WINDOW_WIDTH / 2 - PARTICLE_RADIUS);
@@ -85,23 +86,22 @@ void CreateParticle() {
         float r = randomColor(generator);
         float g = randomColor(generator);
         float b = randomColor(generator);
+
         particles.emplace_back(vx, vy, x, y, r, g, b);
-
         particles.back().color_change = 0.0f;
+        i++;
 
-        particlesCreated++;
-    } else {
-        if (!creationFinished) {
-            creationFinished = true;
-            std::chrono::high_resolution_clock::time_point endTime = std::chrono::high_resolution_clock::now();
-            float totalTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - previousFrameTime).count() / 1000.0f;
-            std::cout << "Tiempo total: " << totalTime << " segundos" << std::endl;
-        }
-    }
+    } 
+    
+    creationFinished = true;
+    std::chrono::high_resolution_clock::time_point endTime = std::chrono::high_resolution_clock::now();
+    float totalTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - previousFrameTime).count() / 1000.0f;
+    std::cout << "Tiempo total: " << totalTime << " segundos" << std::endl;
+
+
 }
 
 void UpdateParticles(int value) {
-    CreateParticle();
 
     std::chrono::high_resolution_clock::time_point currentFrameTime = std::chrono::high_resolution_clock::now();
     float deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentFrameTime - previousFrameTime).count() / 1000.0f;
@@ -155,6 +155,8 @@ int main(int argc, char** argv) {
 
     glMatrixMode(GL_MODELVIEW);                         // Establece la matriz de vista del modelo
     glLoadIdentity();                                   // Carga la matriz identidad
+
+    CreateParticle();                                   // Inicia la simulación de partículas
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);               // Establece el color de fondo
     glutDisplayFunc(DrawParticles);                     // Establece la función de dibujo
