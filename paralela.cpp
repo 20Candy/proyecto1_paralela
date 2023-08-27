@@ -142,7 +142,6 @@ void UpdateParticles(int value) {
     std::chrono::high_resolution_clock::time_point currentFrameTime = std::chrono::high_resolution_clock::now();
     float deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentFrameTime - previousFrameTime).count() / 1000.0f;
 
-    #pragma omp parallel for
     for (size_t i = 0; i < particles.size(); i++) {
         particles[i].posX += particles[i].velocityX;
         particles[i].posY += particles[i].velocityY;
