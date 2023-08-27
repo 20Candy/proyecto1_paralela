@@ -36,7 +36,8 @@ int numParticlesToCreate = 0;
 bool creationFinished = false;
 
 void CreateParticle() {
-
+    particles.resize(numParticlesToCreate);
+    
     // Tomar el tiempo de inicio
     std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now();
 
