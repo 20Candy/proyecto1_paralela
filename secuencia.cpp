@@ -29,7 +29,7 @@ std::vector<Particle> particles;
 float randomFloatColor() {
     const unsigned int seed = 42;
     std::default_random_engine generator(seed);
-    std::uniform_real_distribution<float> distribution(0.0f, 1.0f);
+    std::uniform_real_distribution<float> distribution(0.1f, 1.0f);
     return distribution(generator);
 }
 
@@ -42,9 +42,11 @@ void DrawParticles() {
     glClear(GL_COLOR_BUFFER_BIT);
 
     frameCount++;
+    std::chrono::high_resolution_clock::time_point currentFrameTime = std::chrono::high_resolution_clock::now();
+    float timeFPS = std::chrono::duration_cast<std::chrono::milliseconds>(currentFrameTime - previousFrameTime).count() / 1000.0f;
 
-    if (deltaTime >= 1.0f) {
-        fps = static_cast<float>(frameCount) / deltaTime;
+    if (timeFPS >= 1.0f) {
+        fps = static_cast<float>(frameCount) / timeFPS;
         frameCount = 0;
     }
 
