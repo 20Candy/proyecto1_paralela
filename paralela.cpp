@@ -54,9 +54,9 @@ void CreateParticle() {
 
     #pragma omp parallel
     {
-        int ID = omp_get_thread_num();                  // ID del hilo
-        int inicio = ID * nums_bloque;                  // Inicio del bloque
-        int fin = std::min(inicio + nums_bloque, N);    // Fin del bloque
+        int ID = omp_get_thread_num();                                      // ID del hilo
+        int inicio = ID * nums_bloque;                                      // Inicio del bloque
+        int fin = std::min(inicio + nums_bloque, numParticlesToCreate);     // Fin del bloque
 
         for (int i = inicio; i < fin; ++i) {
             float radius = randomRadius(generator);
