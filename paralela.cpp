@@ -50,13 +50,13 @@ void CreateParticle() {
     int num_hilos = omp_get_max_threads();                                  // Número de hilos
     int nums_bloque = ceil((double)numParticlesToCreate / num_hilos);      // Números por bloque
 
-    std::vector<std::vector<Particle>> localParticles(num_hilos);
-
     #pragma omp parallel
     {
         int ID = omp_get_thread_num();                                      // ID del hilo
         int inicio = ID * nums_bloque;                                      // Inicio del bloque
         int fin = std::min(inicio + nums_bloque, numParticlesToCreate);     // Fin del bloque
+
+        std::vector<Particle> localParticles;
 
         for (int i = inicio; i < fin; ++i) {
             float radius = randomRadius(generator);
@@ -74,10 +74,11 @@ void CreateParticle() {
         #pragma omp barrier             // Esperar a que todos los hilos terminen de
                                         // llenar los buffers locales (con numeros ordenados)
 
-        #pragma omp master              // Solo el hilo master escribe a particulas
+        #pragma omp master
         {
+            particles.reserve(numParticlesToCreate);
             for (const auto& local : localParticles) {
-                particles.insert(particles.end(), local.begin(), local.end());
+                particles.push_back(local);
             }
         }
     }
