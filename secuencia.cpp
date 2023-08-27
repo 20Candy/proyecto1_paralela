@@ -4,6 +4,7 @@
 #include <vector>
 #include <random>
 #include <chrono>
+#include <random>
 
 const int WINDOW_WIDTH = 1920;
 const int WINDOW_HEIGHT = 1080;
@@ -17,16 +18,27 @@ struct Particle {
     float colorR;
     float colorG;
     float colorB;
+    float color_change;
 
     Particle(float vx, float vy, float x, float y, float r, float g, float b)
-        : velocityX(vx), velocityY(vy), posX(x), posY(y), colorR(r), colorG(g), colorB(b) {}
+        : velocityX(vx), velocityY(vy), posX(x), posY(y), colorR(r), colorG(g), colorB(b), color_change(0.0f) {}
 };
 
 std::vector<Particle> particles;
 
+float randomFloatColor() {
+    const unsigned int seed = 42;
+    std::default_random_engine generator(seed);
+    std::uniform_real_distribution<float> distribution(0.0f, 1.0f);
+    return distribution(generator);
+}
+
 std::chrono::high_resolution_clock::time_point previousFrameTime;
 int frameCount = 0;
 float fps = 0.0f;
+
+std::chrono::high_resolution_clock::time_point previousFrameTime;
+float deltaTime = 0.0f;
 
 void DrawParticles() {
     glClear(GL_COLOR_BUFFER_BIT);
@@ -84,6 +96,9 @@ void CreateParticle() {
         float g = randomColor(generator);
         float b = randomColor(generator);
         particles.emplace_back(vx, vy, x, y, r, g, b);
+
+        particles.back().color_change = 0.0f;
+
         particlesCreated++;
     } else {
         if (!creationFinished) {
@@ -97,9 +112,25 @@ void CreateParticle() {
 
 void UpdateParticles(int value) {
     CreateParticle();
+
+    // Se actualiza el tiempo transcurrido entre frames
+    std::chrono::high_resolution_clock::time_point currentFrameTime = std::chrono::high_resolution_clock::now();
+    deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentFrameTime - previousFrameTime).count() / 1000.0f;
+    previousFrameTime = currentFrameTime;
+
+
     for (size_t i = 0; i < particles.size(); i++) {
         particles[i].posX += particles[i].velocityX;
         particles[i].posY += particles[i].velocityY;
+
+        particles[i].color_change += deltaTime;
+        if (particles[i].color_change >= 2.0f) { // Change color every 2 seconds
+            particles[i].colorR = randomFloatColor();
+            particles[i].colorG = randomFloatColor();
+            particles[i].colorB = randomFloatColor();
+            particles[i].color_change = 0.0f;
+        }
+
         if (particles[i].posX < -WINDOW_WIDTH / 2 + PARTICLE_RADIUS || particles[i].posX > WINDOW_WIDTH / 2 - PARTICLE_RADIUS) {
             particles[i].velocityX = -particles[i].velocityX;
         }
@@ -117,19 +148,25 @@ int main(int argc, char** argv) {
         return 1;
     }
     previousFrameTime = std::chrono::high_resolution_clock::now();
-    numParticlesToCreate = std::atoi(argv[1]);
-    glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
-    glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-    glutCreateWindow("Particle Animation");
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
+    numParticlesToCreate = std::atoi(argv[1]);          // Obtiene el número de partículas a crear
+
+    glutInit(&argc, argv);                              // Inicializa GLUT
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);        // Habilita el doble buffer y el modelo de color RGB
+    glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);    // Establece el tamaño de la ventana
+    glutCreateWindow("Proyecto Paralela");              // Crea la ventana con el título dado
+
+    glMatrixMode(GL_PROJECTION);                        // Establece la matriz de proyección
+    glLoadIdentity();                                   // Carga la matriz identidad
+
+    // Establece la matriz de proyección ortogonal
     glOrtho(-WINDOW_WIDTH / 2, WINDOW_WIDTH / 2, -WINDOW_HEIGHT / 2, WINDOW_HEIGHT / 2, -1.0, 1.0);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glutDisplayFunc(DrawParticles);
-    glutTimerFunc(0, UpdateParticles, 0);
-    glutMainLoop();
+
+    glMatrixMode(GL_MODELVIEW);                         // Establece la matriz de vista del modelo
+    glLoadIdentity();                                   // Carga la matriz identidad
+
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);               // Establece el color de fondo
+    glutDisplayFunc(DrawParticles);                     // Establece la función de dibujo
+    glutTimerFunc(0, UpdateParticles, 0);               // Establece la función de actualización
+    glutMainLoop();                                     // Inicia el ciclo de dibujo
     return 0;
 }
