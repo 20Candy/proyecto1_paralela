@@ -62,8 +62,8 @@ void CreateParticle() {
         float g = randomColor(generator);
         float b = randomColor(generator);
 
-        #pragma omp critical
-        particles.emplace_back(vx, vy, x, y, r, g, b, 0.0f, radius);
+        Particle newParticle(vx, vy, x, y, r, g, b, 0.0f, radius);
+        particles[i] = newParticle;
         
     } 
     
