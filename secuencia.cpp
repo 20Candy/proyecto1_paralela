@@ -36,6 +36,9 @@ bool creationFinished = false;
 
 void CreateParticle() {
 
+    // Tomar el tiempo de inicio
+    std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now();
+
     for (int i = 0; i < numParticlesToCreate; i++)
     {
         std::random_device rd;
@@ -60,9 +63,8 @@ void CreateParticle() {
         particles.emplace_back(vx, vy, x, y, r, g, b, 0.0f, radius);
     } 
     
-    creationFinished = true;
     std::chrono::high_resolution_clock::time_point endTime = std::chrono::high_resolution_clock::now();
-    float totalTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - previousFrameTime).count() / 1000.0f;
+    std::chrono::duration<double> totalTime = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
     std::cout << "Tiempo total: " << totalTime << " segundos" << std::endl;
 
 }
