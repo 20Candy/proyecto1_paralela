@@ -48,15 +48,15 @@ void CreateParticle() {
     std::uniform_real_distribution<float> randomColor(0.0f, 1.0f);
 
     int num_hilos = omp_get_max_threads();                                  // Número de hilos
-    int nums_bloque = ceil((double)numParticlesToCreate / num_hilos);      // Números por bloque
+    int nums_bloque = ceil((double)numParticlesToCreate / num_hilos);       // Números por bloque
+
+    particles.reserve(numParticlesToCreate);                                // Reserva el espacio para las partículas
 
     #pragma omp parallel
     {
         int ID = omp_get_thread_num();                                      // ID del hilo
         int inicio = ID * nums_bloque;                                      // Inicio del bloque
         int fin = std::min(inicio + nums_bloque, numParticlesToCreate);     // Fin del bloque
-
-        std::vector<Particle> localParticles;
 
         for (int i = inicio; i < fin; ++i) {
             float radius = randomRadius(generator);
@@ -68,15 +68,7 @@ void CreateParticle() {
             float g = randomColor(generator);
             float b = randomColor(generator);
 
-            localParticles.emplace_back(vx, vy, x, y, r, g, b, 0.0f, radius);
-        }
-
-        #pragma omp critical
-        {
-            particles.reserve(nums_bloque);
-            for (const auto& local : localParticles) {
-                particles.push_back(local);
-            }
+            particles[i] = Particle(vx, vy, x, y, r, g, b, 0.0f, radius);
         }
     }
     
