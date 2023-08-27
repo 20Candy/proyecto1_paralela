@@ -6,13 +6,10 @@
 #include <chrono>
 #include <random>
 #include <omp.h>
-#include <tbb/tbb.h>
 
 const int WINDOW_WIDTH = 1920;
 const int WINDOW_HEIGHT = 1080;
 const float PARTICLE_RADIUS = 60.0f;
-
-tbb::tbb_rng rng;           // Random number generator
 
 struct Particle {
     float velocityX;
@@ -44,14 +41,24 @@ void CreateParticle() {
 
     #pragma omp parallel for
     for (int i = 0; i < numParticlesToCreate; i++) {
-        float radius = tbb::parallel_deterministic_random<float>(rng, 20.0f, PARTICLE_RADIUS);
-        float vx = tbb::parallel_deterministic_random<float>(rng, -10.0f, 10.0f);
-        float vy = tbb::parallel_deterministic_random<float>(rng, -10.0f, 10.0f);
-        float x = tbb::parallel_deterministic_random<float>(rng, -WINDOW_WIDTH / 2 + PARTICLE_RADIUS, WINDOW_WIDTH / 2 - PARTICLE_RADIUS);
-        float y = tbb::parallel_deterministic_random<float>(rng, -WINDOW_HEIGHT / 2 + PARTICLE_RADIUS, WINDOW_HEIGHT / 2 - PARTICLE_RADIUS);
-        float r = tbb::parallel_deterministic_random<float>(rng, 0.0f, 1.0f);
-        float g = tbb::parallel_deterministic_random<float>(rng, 0.0f, 1.0f);
-        float b = tbb::parallel_deterministic_random<float>(rng, 0.0f, 1.0f);
+
+        thread_local std::random_device rd;
+        thread_local std::mt19937 generator(rd());
+
+        std::uniform_real_distribution<float> randomRadius(20.0f, PARTICLE_RADIUS);
+        std::uniform_real_distribution<float> randomFloatX(-WINDOW_WIDTH / 2 + PARTICLE_RADIUS, WINDOW_WIDTH / 2 - PARTICLE_RADIUS);
+        std::uniform_real_distribution<float> randomFloatY(-WINDOW_HEIGHT / 2 + PARTICLE_RADIUS, WINDOW_HEIGHT / 2 - PARTICLE_RADIUS);
+        std::uniform_real_distribution<float> randomVelocity(-10.0f, 10.0f);
+        std::uniform_real_distribution<float> randomColor(0.0f, 1.0f);
+
+        float radius = randomRadius(generator);
+        float vx = randomVelocity(generator);
+        float vy = randomVelocity(generator);
+        float x = randomFloatX(generator);
+        float y = randomFloatY(generator);
+        float r = randomColor(generator);
+        float g = randomColor(generator);
+        float b = randomColor(generator);
 
         particles[i] = Particle(vx, vy, x, y, r, g, b, 0.0f, radius);
     } 
