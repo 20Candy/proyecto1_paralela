@@ -39,10 +39,9 @@ void CreateParticle() {
     // Obtenemos el tiempo de inicio
     double start_time = omp_get_wtime();
 
-    std::random_device rd;
-    std::default_random_engine generator(rd());
-
     for (int i = 0; i < numParticlesToCreate; i++) {
+        sstd::random_device rd;
+        std::mt19937 generator(rd());
         std::uniform_real_distribution<float> randomRadius(20.0f, PARTICLE_RADIUS);
         std::uniform_real_distribution<float> randomFloatX(-WINDOW_WIDTH / 2 + PARTICLE_RADIUS, WINDOW_WIDTH / 2 - PARTICLE_RADIUS);
         std::uniform_real_distribution<float> randomFloatY(-WINDOW_HEIGHT / 2 + PARTICLE_RADIUS, WINDOW_HEIGHT / 2 - PARTICLE_RADIUS);
