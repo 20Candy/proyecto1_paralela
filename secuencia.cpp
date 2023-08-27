@@ -35,8 +35,8 @@ int numParticlesToCreate = 0;
 bool creationFinished = false;
 
 void CreateParticle() {
-    // Tomar el tiempo de inicio
-    std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now();
+    // Obtenemos el tiempo de inicio
+    auto start_time = std::chrono::high_resolution_clock::now();
 
     std::random_device rd;
     std::default_random_engine generator(rd());
@@ -59,10 +59,9 @@ void CreateParticle() {
         particles.emplace_back(vx, vy, x, y, r, g, b, 0.0f, radius);
     } 
     
-    std::chrono::high_resolution_clock::time_point endTime = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> totalTime = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
-    std::cout << "Tiempo de creación de partículas: " << totalTime.count() << " segundos\n";
-
+    auto end_time = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
+    std::cout << "Tiempo de ejecución: " << duration.count() << " microsegundos." << std::endl;
 }
 
 void DrawParticles() {
