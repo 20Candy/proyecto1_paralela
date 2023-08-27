@@ -26,7 +26,7 @@ struct Particle {
         : velocityX(vx), velocityY(vy), posX(x), posY(y), colorR(r), colorG(g), colorB(b), color_change(ch), radius(rad) {}
 };
 
-std::vector<Particle> particles;
+std::vector<Particle> particles(10000);
 
 std::chrono::high_resolution_clock::time_point previousFrameTime;
 int frameCount = 0;
@@ -37,7 +37,7 @@ bool creationFinished = false;
 
 void CreateParticle() {
     particles.resize(numParticlesToCreate);
-
+    
     // Tomar el tiempo de inicio
     std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now();
 
