@@ -25,7 +25,7 @@ struct Particle {
         : velocityX(vx), velocityY(vy), posX(x), posY(y), colorR(r), colorG(g), colorB(b), color_change(ch), radius(rad) {}
 };
 
-std::vector<Particle> particles(100000);
+std::vector<Particle> particles;
 
 std::chrono::high_resolution_clock::time_point previousFrameTime;
 int frameCount = 0;

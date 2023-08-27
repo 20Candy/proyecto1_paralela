@@ -22,11 +22,14 @@ struct Particle {
     float color_change;
     float radius;
 
+    Particle()
+        : velocityX(0.0f), velocityY(0.0f), posX(0.0f), posY(0.0f), colorR(1.0f), colorG(1.0f), colorB(1.0f), color_change(0.0f), radius(1.0f) {}
+
     Particle(float vx, float vy, float x, float y, float r, float g, float b, float ch, float rad)
         : velocityX(vx), velocityY(vy), posX(x), posY(y), colorR(r), colorG(g), colorB(b), color_change(ch), radius(rad) {}
 };
 
-std::vector<Particle> particles(100000);
+std::vector<Particle> particles (10001);
 
 std::chrono::high_resolution_clock::time_point previousFrameTime;
 int frameCount = 0;
