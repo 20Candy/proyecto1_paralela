@@ -36,8 +36,6 @@ float randomFloatColor() {
 std::chrono::high_resolution_clock::time_point previousFrameTime;
 int frameCount = 0;
 float fps = 0.0f;
-
-std::chrono::high_resolution_clock::time_point previousFrameTime;
 float deltaTime = 0.0f;
 
 void DrawParticles() {
