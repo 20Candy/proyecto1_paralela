@@ -68,7 +68,7 @@ void CreateParticle() {
             float g = randomColor(generator);
             float b = randomColor(generator);
 
-            localParticles[ID].emplace_back(vx, vy, x, y, r, g, b, 0.0f, radius);
+            localParticles.emplace_back(vx, vy, x, y, r, g, b, 0.0f, radius);
         }
 
         #pragma omp barrier             // Esperar a que todos los hilos terminen de
