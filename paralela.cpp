@@ -51,14 +51,16 @@ void CreateParticle() {
 
         #pragma omp parallel for
         for (int i = 0; i < numParticlesToCreate; i++) {
-            float radius = randomRadius(generator);
-            float vx = randomVelocity(generator);
-            float vy = randomVelocity(generator);
-            float x = randomFloatX(generator);
-            float y = randomFloatY(generator);
-            float r = randomColor(generator);
-            float g = randomColor(generator);
-            float b = randomColor(generator);
+            std::default_random_engine localGenerator(generator);  // Generador local
+            
+            float radius = randomRadius(localGenerator);
+            float vx = randomVelocity(localGenerator);
+            float vy = randomVelocity(localGenerator);
+            float x = randomFloatX(localGenerator);
+            float y = randomFloatY(localGenerator);
+            float r = randomColor(localGenerator);
+            float g = randomColor(localGenerator);
+            float b = randomColor(localGenerator);
 
             particles[i] = Particle(vx, vy, x, y, r, g, b, 0.0f, radius);
         } 
