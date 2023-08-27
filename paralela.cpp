@@ -61,8 +61,6 @@ void CreateParticle() {
         particles[i] = Particle(vx, vy, x, y, r, g, b, 0.0f, radius);
     } 
 
-    
-
     auto end_time = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
     std::cout << "Tiempo de ejecución: " << duration.count() << " microsegundos." << std::endl;
