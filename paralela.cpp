@@ -39,28 +39,32 @@ void CreateParticle() {
     // Obtenemos el tiempo de inicio
     auto start_time = std::chrono::high_resolution_clock::now();
 
-    std::random_device rd;
-    std::default_random_engine generator(rd());
-    std::uniform_real_distribution<float> randomRadius(20.0f, PARTICLE_RADIUS);
-    std::uniform_real_distribution<float> randomFloatX(-WINDOW_WIDTH / 2 + PARTICLE_RADIUS, WINDOW_WIDTH / 2 - PARTICLE_RADIUS);
-    std::uniform_real_distribution<float> randomFloatY(-WINDOW_HEIGHT / 2 + PARTICLE_RADIUS, WINDOW_HEIGHT / 2 - PARTICLE_RADIUS);
-    std::uniform_real_distribution<float> randomVelocity(-10.0f, 10.0f);
-    std::uniform_real_distribution<float> randomColor(0.0f, 1.0f);
+    #pragma omp parallel
+    {
+        std::random_device rd;
+        std::default_random_engine generator(rd() + omp_get_thread_num());
+        std::uniform_real_distribution<float> randomRadius(20.0f, PARTICLE_RADIUS);
+        std::uniform_real_distribution<float> randomFloatX(-WINDOW_WIDTH / 2 + PARTICLE_RADIUS, WINDOW_WIDTH / 2 - PARTICLE_RADIUS);
+        std::uniform_real_distribution<float> randomFloatY(-WINDOW_HEIGHT / 2 + PARTICLE_RADIUS, WINDOW_HEIGHT / 2 - PARTICLE_RADIUS);
+        std::uniform_real_distribution<float> randomVelocity(-10.0f, 10.0f);
+        std::uniform_real_distribution<float> randomColor(0.0f, 1.0f);
 
-    #pragma omp parallel for
-    for (int i = 0; i < numParticlesToCreate; i++) {
-        float radius = randomRadius(generator);
-        float vx = randomVelocity(generator);
-        float vy = randomVelocity(generator);
-        float x = randomFloatX(generator);
-        float y = randomFloatY(generator);
-        float r = randomColor(generator);
-        float g = randomColor(generator);
-        float b = randomColor(generator);
+        #pragma omp parallel for
+        for (int i = 0; i < numParticlesToCreate; i++) {
+            float radius = randomRadius(generator);
+            float vx = randomVelocity(generator);
+            float vy = randomVelocity(generator);
+            float x = randomFloatX(generator);
+            float y = randomFloatY(generator);
+            float r = randomColor(generator);
+            float g = randomColor(generator);
+            float b = randomColor(generator);
 
-        particles[i] = Particle(vx, vy, x, y, r, g, b, 0.0f, radius);
-    } 
-    
+            particles[i] = Particle(vx, vy, x, y, r, g, b, 0.0f, radius);
+        } 
+
+    }
+
     auto end_time = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
     std::cout << "Tiempo de ejecución: " << duration.count() << " microsegundos." << std::endl;
