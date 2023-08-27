@@ -47,40 +47,23 @@ void CreateParticle() {
     std::uniform_real_distribution<float> randomVelocity(-10.0f, 10.0f);
     std::uniform_real_distribution<float> randomColor(0.0f, 1.0f);
 
-    int num_hilos = omp_get_max_threads();                                  // Número de hilos
-    int nums_bloque = ceil((double)numParticlesToCreate / num_hilos);       // Números por bloque
+    #pragma omp parallel for
+    for (int i = 0; i < numParticlesToCreate; i++) {
+        float radius = randomRadius(generator);
+        float vx = randomVelocity(generator);
+        float vy = randomVelocity(generator);
+        float x = randomFloatX(generator);
+        float y = randomFloatY(generator);
+        float r = randomColor(generator);
+        float g = randomColor(generator);
+        float b = randomColor(generator);
 
-    particles.reserve(numParticlesToCreate);                                // Reserva el espacio para las partículas
-
-    #pragma omp parallel
-    {
-        int ID = omp_get_thread_num();                                      // ID del hilo
-        int inicio = ID * nums_bloque;                                      // Inicio del bloque
-        int fin = std::min(inicio + nums_bloque, numParticlesToCreate);     // Fin del bloque
-
-        for (int i = inicio; i < fin; ++i) {
-            float radius = randomRadius(generator);
-            float vx = randomVelocity(generator);
-            float vy = randomVelocity(generator);
-            float x = randomFloatX(generator);
-            float y = randomFloatY(generator);
-            float r = randomColor(generator);
-            float g = randomColor(generator);
-            float b = randomColor(generator);
-
-            particles[i] = Particle(vx, vy, x, y, r, g, b, 0.0f, radius);
-        }
-    }
+        particles[i] = Particle(vx, vy, x, y, r, g, b, 0.0f, radius);
+    } 
     
     auto end_time = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
     std::cout << "Tiempo de ejecución: " << duration.count() << " microsegundos." << std::endl;
-}
-
-void AggregateParticles(std::vector<Particle>& particles, const std::vector<std::vector<Particle>>& localParticles) {
-    for (const auto& local : localParticles) {
-        particles.insert(particles.end(), local.begin(), local.end());
-    }
 }
 
 void DrawParticles() {
@@ -186,6 +169,8 @@ int main(int argc, char** argv) {
     }
     previousFrameTime = std::chrono::high_resolution_clock::now();
     numParticlesToCreate = std::atoi(argv[1]);          // Obtiene el número de partículas a crear
+
+    particles.reserve(numParticlesToCreate);                                // Reserva el espacio para las partículas
 
     glutInit(&argc, argv);                              // Inicializa GLUT
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);        // Habilita el doble buffer y el modelo de color RGB

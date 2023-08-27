@@ -171,6 +171,8 @@ int main(int argc, char** argv) {
     previousFrameTime = std::chrono::high_resolution_clock::now();
     numParticlesToCreate = std::atoi(argv[1]);          // Obtiene el número de partículas a crear
 
+    particles.reserve(numParticlesToCreate);                                // Reserva el espacio para las partículas
+
     glutInit(&argc, argv);                              // Inicializa GLUT
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);        // Habilita el doble buffer y el modelo de color RGB
     glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);    // Establece el tamaño de la ventana
