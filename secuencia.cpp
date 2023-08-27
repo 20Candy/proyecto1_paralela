@@ -38,15 +38,15 @@ void CreateParticle() {
     // Obtenemos el tiempo de inicio
     auto start_time = std::chrono::high_resolution_clock::now();
 
-    std::random_device rd;
-    std::default_random_engine generator(rd());
-    std::uniform_real_distribution<float> randomRadius(20.0f, PARTICLE_RADIUS);
-    std::uniform_real_distribution<float> randomFloatX(-WINDOW_WIDTH / 2 + PARTICLE_RADIUS, WINDOW_WIDTH / 2 - PARTICLE_RADIUS);
-    std::uniform_real_distribution<float> randomFloatY(-WINDOW_HEIGHT / 2 + PARTICLE_RADIUS, WINDOW_HEIGHT / 2 - PARTICLE_RADIUS);
-    std::uniform_real_distribution<float> randomVelocity(-10.0f, 10.0f);
-    std::uniform_real_distribution<float> randomColor(0.0f, 1.0f);
-
     for (int i = 0; i < numParticlesToCreate; i++) {
+        std::random_device rd;
+        std::default_random_engine generator(rd());
+        std::uniform_real_distribution<float> randomRadius(20.0f, PARTICLE_RADIUS);
+        std::uniform_real_distribution<float> randomFloatX(-WINDOW_WIDTH / 2 + PARTICLE_RADIUS, WINDOW_WIDTH / 2 - PARTICLE_RADIUS);
+        std::uniform_real_distribution<float> randomFloatY(-WINDOW_HEIGHT / 2 + PARTICLE_RADIUS, WINDOW_HEIGHT / 2 - PARTICLE_RADIUS);
+        std::uniform_real_distribution<float> randomVelocity(-10.0f, 10.0f);
+        std::uniform_real_distribution<float> randomColor(0.0f, 1.0f);
+        
         float radius = randomRadius(generator);
         float vx = randomVelocity(generator);
         float vy = randomVelocity(generator);
