@@ -50,19 +50,19 @@ void DrawParticles() {
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, c);
     }
 
-    for (size_t i = 0; i < particles.size(); i++){
-        glColor3f(particles[i].colorR, particles[i].colorG, particles[i].colorB);    // Accede a los colores de la partícula
+    for (size_t i = 0; i < particles.size(); i++) {
+        glColor3f(particles[i].colorR, particles[i].colorG, particles[i].colorB);
         glBegin(GL_TRIANGLE_FAN);
-        glVertex2f(particles[i].posX, particles[i].posY);                           // Accede a su posición
-
+        glVertex2f(particles[i].posX, particles[i].posY);
         const int numSegments = 16;
 
-        for (int i = 0; i <= numSegments; i++) {
-            float angle = i * 2.0f * M_PI / numSegments;
+        for (int j = 0; j <= numSegments; j++) {
+            float angle = j * 2.0f * M_PI / numSegments;
             float dx = particles[i].radius * std::cos(angle);
             float dy = particles[i].radius * std::sin(angle);
-            glVertex2f(particles[i].posX + dx, particles[i].posY + dy);             // Dibuja la partícula
+            glVertex2f(particles[i].posX + dx, particles[i].posY + dy);
         }
+
         glEnd();
     }
 
