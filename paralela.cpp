@@ -37,7 +37,7 @@ bool creationFinished = false;
 
 void CreateParticle() {
     // Obtenemos el tiempo de inicio
-    auto start_time = std::chrono::high_resolution_clock::now();
+    double start_time = omp_get_wtime();
 
     std::random_device rd;
     std::mt19937 generator(rd());
@@ -62,9 +62,9 @@ void CreateParticle() {
         particles[i] = Particle(vx, vy, x, y, r, g, b, 0.0f, radius);
     } 
 
-    auto end_time = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
-    std::cout << "Tiempo de ejecución: " << duration.count() << " microsegundos." << std::endl;
+    double end_time = omp_get_wtime();
+    double duration = end_time - start_time;
+    std::cout << "Tiempo de ejecución: " << duration << " segundos." << std::endl;
 }
 
 void DrawParticles() {
