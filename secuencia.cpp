@@ -31,6 +31,42 @@ std::chrono::high_resolution_clock::time_point previousFrameTime;
 int frameCount = 0;
 float fps = 0.0f;
 
+int numParticlesToCreate = 0;
+bool creationFinished = false;
+
+void CreateParticle() {
+
+    for (int i = 0; i < numParticlesToCreate; i++)
+    {
+        std::random_device rd;
+        std::default_random_engine generator(rd());
+
+        std::uniform_real_distribution<float> randomRadius(20.0f, 60.0f);   // Radio aleatorio
+        float radius = randomRadius(generator);
+
+        std::uniform_real_distribution<float> randomFloatX(-WINDOW_WIDTH / 2 + radius, WINDOW_WIDTH / 2 - radius);
+        std::uniform_real_distribution<float> randomFloatY(-WINDOW_HEIGHT / 2 + radius, WINDOW_HEIGHT / 2 - radius);
+        std::uniform_real_distribution<float> randomVelocity(-10.0f, 10.0f);
+        std::uniform_real_distribution<float> randomColor(0.0f, 1.0f);
+
+        float vx = randomVelocity(generator);
+        float vy = randomVelocity(generator);
+        float x = randomFloatX(generator);
+        float y = randomFloatY(generator);
+        float r = randomColor(generator);
+        float g = randomColor(generator);
+        float b = randomColor(generator);
+
+        particles.emplace_back(vx, vy, x, y, r, g, b, 0.0f, radius);
+    } 
+    
+    creationFinished = true;
+    std::chrono::high_resolution_clock::time_point endTime = std::chrono::high_resolution_clock::now();
+    float totalTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - previousFrameTime).count() / 1000.0f;
+    std::cout << "Tiempo total: " << totalTime << " segundos" << std::endl;
+
+}
+
 void DrawParticles() {
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -67,42 +103,6 @@ void DrawParticles() {
     }
 
     glutSwapBuffers();
-}
-
-int numParticlesToCreate = 0;
-bool creationFinished = false;
-
-void CreateParticle() {
-
-    for (int i = 0; i < numParticlesToCreate; i++)
-    {
-        std::random_device rd;
-        std::default_random_engine generator(rd());
-
-        std::uniform_real_distribution<float> randomRadius(20.0f, 30.0f);   // Radio aleatorio
-        float radius = randomRadius(generator);
-
-        std::uniform_real_distribution<float> randomFloatX(-WINDOW_WIDTH / 2 + radius, WINDOW_WIDTH / 2 - radius);
-        std::uniform_real_distribution<float> randomFloatY(-WINDOW_HEIGHT / 2 + radius, WINDOW_HEIGHT / 2 - radius);
-        std::uniform_real_distribution<float> randomVelocity(-10.0f, 10.0f);
-        std::uniform_real_distribution<float> randomColor(0.0f, 1.0f);
-
-        float vx = randomVelocity(generator);
-        float vy = randomVelocity(generator);
-        float x = randomFloatX(generator);
-        float y = randomFloatY(generator);
-        float r = randomColor(generator);
-        float g = randomColor(generator);
-        float b = randomColor(generator);
-
-        particles.emplace_back(vx, vy, x, y, r, g, b, 0.0f, radius);
-    } 
-    
-    creationFinished = true;
-    std::chrono::high_resolution_clock::time_point endTime = std::chrono::high_resolution_clock::now();
-    float totalTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - previousFrameTime).count() / 1000.0f;
-    std::cout << "Tiempo total: " << totalTime << " segundos" << std::endl;
-
 }
 
 void UpdateParticles(int value) {
