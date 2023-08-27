@@ -65,7 +65,7 @@ void CreateParticle() {
     
     std::chrono::high_resolution_clock::time_point endTime = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> totalTime = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
-    std::cout << "Tiempo total: " << totalTime << " segundos" << std::endl;
+    std::cout << "Tiempo de creación de partículas: " << totalTime.count() << " segundos\n";
 
 }
 
