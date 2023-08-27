@@ -26,7 +26,7 @@ struct Particle {
         : velocityX(vx), velocityY(vy), posX(x), posY(y), colorR(r), colorG(g), colorB(b), color_change(ch), radius(rad) {}
 };
 
-std::vector<Particle> particles(10000);
+std::vector<Particle> particles(100000);
 
 std::chrono::high_resolution_clock::time_point previousFrameTime;
 int frameCount = 0;
@@ -36,8 +36,6 @@ int numParticlesToCreate = 0;
 bool creationFinished = false;
 
 void CreateParticle() {
-    particles.resize(numParticlesToCreate);
-    
     // Tomar el tiempo de inicio
     std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now();
 
@@ -92,7 +90,7 @@ void DrawParticles() {
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, c);
     }
 
-    for (size_t i = 0; i < particles.size(); i++) {
+    for (size_t i = 0; i < numParticlesToCreate; i++) {
         // Dibujar el cuerpo (un círculo grande)
         glColor3f(particles[i].colorR, particles[i].colorG, particles[i].colorB);
         glBegin(GL_TRIANGLE_FAN);
@@ -141,7 +139,7 @@ void UpdateParticles(int value) {
     std::chrono::high_resolution_clock::time_point currentFrameTime = std::chrono::high_resolution_clock::now();
     float deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentFrameTime - previousFrameTime).count() / 1000.0f;
 
-    for (size_t i = 0; i < particles.size(); i++) {
+    for (size_t i = 0; i < numParticlesToCreate; i++) {
         particles[i].posX += particles[i].velocityX;
         particles[i].posY += particles[i].velocityY;
 
