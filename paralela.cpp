@@ -95,8 +95,6 @@ void DrawParticles() {
     double ys[numSegments];
 
     for (size_t i = 0; i < numParticlesToCreate; i++) {
-        
-        glEnd();
 
         // Dibujar el cuerpo (un círculo grande)
         glColor3f(particles[i].colorR, particles[i].colorG, particles[i].colorB);
@@ -105,7 +103,7 @@ void DrawParticles() {
 
         #pragma omp parallel
         {
-            #pragma omp for nowait
+            #pragma omp for
             for (int j = 0; j <= numSegments; j++) {
                 float angle = j * 2.0f * M_PI / numSegments;
                 float dx = particles[i].radius * std::cos(angle);
@@ -114,13 +112,13 @@ void DrawParticles() {
                 xs[j] = particles[i].posX + dx;
                 ys[j] = particles[i].posY + dy;
             }
-        } 
 
-        for (int j = 0; j <= numSegments; j++) {    // Pero no se paraleliza el dibujo porque OpenGL no lo permite
-            glVertex2f(xs[j], ys[j]);
+            for (int j = 0; j <= numSegments; j++) {    // Pero no se paraleliza el dibujo porque OpenGL no lo permite
+                glVertex2f(xs[j], ys[j]);
+            }
+
+            glEnd();
         }
-
-        glEnd();
 
     }
 
