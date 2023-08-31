@@ -89,7 +89,6 @@ void DrawParticles() {
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, c);
     }
 
-    #pragma omp parallel for num_threads(4) shared(particles)
     for (size_t i = 0; i < numParticlesToCreate; i++) {
 
         // Dibujar el cuerpo (un círculo grande)
@@ -106,33 +105,6 @@ void DrawParticles() {
         }
         glEnd();
 
-        // Dibujar un circulo negro de la mitad del radio
-        glColor3f(0.0f,0.0f,0.0f);
-        glBegin(GL_TRIANGLE_FAN);
-        glVertex2f(particles[i].posX, particles[i].posY);
-        const int numSegments2 = 32;
-
-        for (int j = 0; j <= numSegments2; j++) {
-            float angle = j * 2.0f * M_PI / numSegments2;
-            float dx = particles[i].radius/2 * std::cos(angle);
-            float dy = particles[i].radius/2 * std::sin(angle);
-            glVertex2f(particles[i].posX + dx, particles[i].posY + dy);
-        }
-        glEnd();
-
-        // Dibujar el un circulo de color adentro del negro
-        glColor3f((particles[i].colorR)/2, (particles[i].colorG)/2, (particles[i].colorB)/2);
-        glBegin(GL_TRIANGLE_FAN);
-        glVertex2f(particles[i].posX, particles[i].posY);
-        const int numSegments3 = 64;
-
-        for (int j = 0; j <= numSegments3; j++) {
-            float angle = j * 2.0f * M_PI / numSegments3;
-            float dx = particles[i].radius/4 * std::cos(angle);
-            float dy = particles[i].radius/4 * std::sin(angle);
-            glVertex2f(particles[i].posX + dx, particles[i].posY + dy);
-        }
-        glEnd();
     }
 
     glutSwapBuffers();
@@ -143,6 +115,7 @@ void UpdateParticles(int value) {
     std::chrono::high_resolution_clock::time_point currentFrameTime = std::chrono::high_resolution_clock::now();
     float deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentFrameTime - previousFrameTime).count() / 1000.0f;
 
+    #pragma omp parallel for num_threads(4)
     for (size_t i = 0; i < numParticlesToCreate; i++) {
         particles[i].posX += particles[i].velocityX;
         particles[i].posY += particles[i].velocityY;
