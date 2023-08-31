@@ -110,10 +110,10 @@ void DrawParticles() {
 
             xs[j] = particles[i].posX + dx;
             ys[j] = particles[i].posY + dy;
-        
-            #pragma omp critical
-            glVertex2f(xs[j], ys[j]);
         }
+
+        #pragma omp critical
+        glVertex2f(xs[j], ys[j]);
 
         glEnd();
 
