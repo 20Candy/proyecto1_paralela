@@ -101,15 +101,18 @@ void DrawParticles() {
         glBegin(GL_TRIANGLE_FAN);
         glVertex2f(particles[i].posX, particles[i].posY);
 
-        #pragma omp parallel for num_threads(4)     // se paraleliza los calculos
-        for (int j = 0; j <= numSegments; j++) {
-            float angle = j * 2.0f * M_PI / numSegments;
-            float dx = particles[i].radius * std::cos(angle);
-            float dy = particles[i].radius * std::sin(angle);
+        #pragma omp parallel
+        {
+            #pragma omp for nowait
+            for (int j = 0; j <= numSegments; j++) {
+                float angle = j * 2.0f * M_PI / numSegments;
+                float dx = particles[i].radius * std::cos(angle);
+                float dy = particles[i].radius * std::sin(angle);
 
-            xs[j] = particles[i].posX + dx;
-            ys[j] = particles[i].posY + dy;
-        }
+                xs[j] = particles[i].posX + dx;
+                ys[j] = particles[i].posY + dy;
+            }
+        } 
 
         for (int j = 0; j <= numSegments; j++) {    // Pero no se paraleliza el dibujo porque OpenGL no lo permite
             glVertex2f(xs[j], ys[j]);
