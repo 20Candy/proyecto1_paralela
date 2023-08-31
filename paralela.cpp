@@ -101,7 +101,6 @@ void DrawParticles() {
         glBegin(GL_TRIANGLE_FAN);
         glVertex2f(particles[i].posX, particles[i].posY);
 
-        #pragma omp parallel for
         for (int j = 0; j <= numSegments; j++) {
             float angle = j * 2.0f * M_PI / numSegments;
             float dx = particles[i].radius * std::cos(angle);
@@ -127,31 +126,36 @@ void UpdateParticles(int value) {
     std::chrono::high_resolution_clock::time_point currentFrameTime = std::chrono::high_resolution_clock::now();
     float deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentFrameTime - previousFrameTime).count() / 1000.0f;
 
-    #pragma omp parallel for num_threads(4)
-    for (size_t i = 0; i < numParticlesToCreate; i++) {
-        particles[i].posX += particles[i].velocityX;
-        particles[i].posY += particles[i].velocityY;
-
+    #pragma omp parallel
+    {
         std::random_device rd;
-        std::default_random_engine generator(rd());
+        std::mt19937 generator(rd());
+
         std::uniform_real_distribution<float> randomColor(0.0f, 1.0f);
         std::uniform_int_distribution<int> randomInt(5, 10);
 
-        particles[i].color_change += deltaTime;
-        if (particles[i].color_change >= randomInt(generator)) { // Change color every random seconds
-            particles[i].colorR = randomColor(generator);
-            particles[i].colorG = randomColor(generator);
-            particles[i].colorB = randomColor(generator);
-            particles[i].color_change = 0.0f;
-        }
+        #pragma omp for
+        for (int i = 0; i < numParticlesToCreate; i++) {
+            particles[i].posX += particles[i].velocityX;
+            particles[i].posY += particles[i].velocityY;
 
-        if (particles[i].posX < -WINDOW_WIDTH / 2 + particles[i].radius || particles[i].posX > WINDOW_WIDTH / 2 - particles[i].radius) {
-            particles[i].velocityX = -particles[i].velocityX;
+            particles[i].color_change += deltaTime;
+            if (particles[i].color_change >= randomInt(generator)) { // Change color every random seconds
+                particles[i].colorR = randomColor(generator);
+                particles[i].colorG = randomColor(generator);
+                particles[i].colorB = randomColor(generator);
+                particles[i].color_change = 0.0f;
+            }
+
+            if (particles[i].posX < -WINDOW_WIDTH / 2 + particles[i].radius || particles[i].posX > WINDOW_WIDTH / 2 - particles[i].radius) {
+                particles[i].velocityX = -particles[i].velocityX;
+            }
+            if (particles[i].posY < -WINDOW_HEIGHT / 2 + particles[i].radius || particles[i].posY > WINDOW_HEIGHT / 2 - particles[i].radius) {
+                particles[i].velocityY = -particles[i].velocityY;
+            }
         }
-        if (particles[i].posY < -WINDOW_HEIGHT / 2 + particles[i].radius || particles[i].posY > WINDOW_HEIGHT / 2 - particles[i].radius) {
-            particles[i].velocityY = -particles[i].velocityY;
-        }
-    }
+    } 
+
     glutPostRedisplay();
     glutTimerFunc(16, UpdateParticles, 0);
 }
