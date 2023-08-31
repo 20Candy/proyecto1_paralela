@@ -95,6 +95,8 @@ void DrawParticles() {
     double ys[numSegments];
 
     for (size_t i = 0; i < numParticlesToCreate; i++) {
+        
+        glEnd();
 
         // Dibujar el cuerpo (un círculo grande)
         glColor3f(particles[i].colorR, particles[i].colorG, particles[i].colorB);
