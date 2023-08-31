@@ -91,8 +91,8 @@ void DrawParticles() {
     }
 
     const int numSegments = 64;
-    double xs[numSegments];
-    double ys[numSegments];
+    std::vector<double> xs(numSegments);
+    std::vector<double> ys(numSegments);
 
     for (size_t i = 0; i < numParticlesToCreate; i++) {
 
@@ -101,13 +101,20 @@ void DrawParticles() {
         glBegin(GL_TRIANGLE_FAN);
         glVertex2f(particles[i].posX, particles[i].posY);
 
+        #pragma omp parallel
         for (int j = 0; j <= numSegments; j++) {
             float angle = j * 2.0f * M_PI / numSegments;
             float dx = particles[i].radius * std::cos(angle);
             float dy = particles[i].radius * std::sin(angle);
 
-            glVertex2f(particles[i].posX + dx, particles[i].posY + dy);
+            xs[j] = particles[i].posX + dx;
+            ys[j] = particles[i].posY + dy;
         }
+
+        for (int j = 0; j <= numSegments; j++) {
+            glVertex2f(xs[j], ys[j]);
+        }
+
 
         glEnd();
 
