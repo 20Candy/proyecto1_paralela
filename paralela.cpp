@@ -106,7 +106,7 @@ void DrawParticles() {
         const int numSegments = 64;
 
         // Array de vértices para el círculo de tamaño numSegments
-        std::vector<Circle> circle1();
+        std::vector<Circle> circle1;
         circle1.reserve(numSegments); 
 
         #pragma omp parallel for num_threads(4)     // se paraleliza los calculos
