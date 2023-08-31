@@ -106,12 +106,7 @@ void DrawParticles() {
             float dx = particles[i].radius * std::cos(angle);
             float dy = particles[i].radius * std::sin(angle);
 
-            xs[j] = particles[i].posX + dx;
-            ys[j] = particles[i].posY + dy;
-        }
-
-        for (int j = 0; j <= numSegments; j++) {
-            glVertex2f(xs[j], ys[j]);
+            glVertex2f(particles[i].posX + dx, particles[i].posY + dy);
         }
 
         glEnd();
