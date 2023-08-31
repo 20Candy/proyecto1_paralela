@@ -90,17 +90,16 @@ void DrawParticles() {
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, c);
     }
 
+    const int numSegments = 64;
+    double xs[numSegments];
+    double ys[numSegments];
+
     for (size_t i = 0; i < numParticlesToCreate; i++) {
 
         // Dibujar el cuerpo (un círculo grande)
         glColor3f(particles[i].colorR, particles[i].colorG, particles[i].colorB);
         glBegin(GL_TRIANGLE_FAN);
         glVertex2f(particles[i].posX, particles[i].posY);
-        const int numSegments = 64;
-
-        //array de x y y
-        double xs[numSegments];
-        double ys[numSegments];
 
         #pragma omp parallel for num_threads(4)     // se paraleliza los calculos
         for (int j = 0; j <= numSegments; j++) {
@@ -115,6 +114,7 @@ void DrawParticles() {
         for (int j = 0; j <= numSegments; j++) {    // Pero no se paraleliza el dibujo porque OpenGL no lo permite
             glVertex2f(xs[j], ys[j]);
         }
+
         glEnd();
 
     }
