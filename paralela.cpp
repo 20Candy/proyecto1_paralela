@@ -96,7 +96,7 @@ void DrawParticles() {
         glColor3f(particles[i].colorR, particles[i].colorG, particles[i].colorB);
         glBegin(GL_TRIANGLE_FAN);
         glVertex2f(particles[i].posX, particles[i].posY);
-        const int numSegments = 4;
+        const int numSegments = 64;
 
         //array de x y y
         double xs[numSegments];
