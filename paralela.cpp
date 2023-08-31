@@ -26,13 +26,6 @@ struct Particle {
         : velocityX(vx), velocityY(vy), posX(x), posY(y), colorR(r), colorG(g), colorB(b), color_change(ch), radius(rad) {}
 };
 
-struct Circle {
-    float x;
-    float y;
-
-    Circle(float x, float y) : x(x), y(y) {}
-};
-
 std::vector<Particle> particles;
 
 
@@ -105,9 +98,9 @@ void DrawParticles() {
         glVertex2f(particles[i].posX, particles[i].posY);
         const int numSegments = 64;
 
-        // Array de vértices para el círculo de tamaño numSegments
-        std::vector<Circle> circle1;
-        circle1.reserve(numSegments); 
+        //array de x y y
+        double xs[numSegments];
+        double ys[numSegments];
 
         #pragma omp parallel for num_threads(4)     // se paraleliza los calculos
         for (int j = 0; j <= numSegments; j++) {
@@ -115,11 +108,12 @@ void DrawParticles() {
             float dx = particles[i].radius * std::cos(angle);
             float dy = particles[i].radius * std::sin(angle);
 
-            circle1[j] = Circle{particles[i].posX + dx, particles[i].posY + dy};
+            xs[j] = particles[i].posX + dx;
+            ys[j] = particles[i].posY + dy;
         }
 
         for (int j = 0; j <= numSegments; j++) {    // Pero no se paraleliza el dibujo porque OpenGL no lo permite
-            glVertex2f(circle1[j].x, circle1[j].y);
+            glVertex2f(xs[j], ys[j]);
         }
         glEnd();
 
