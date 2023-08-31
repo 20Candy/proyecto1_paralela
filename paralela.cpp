@@ -106,7 +106,8 @@ void DrawParticles() {
         const int numSegments = 64;
 
         // Array de vértices para el círculo de tamaño numSegments
-        std::vector<Circle> circle1(numSegments); 
+        std::vector<Circle> circle1();
+        circle1.reserve(numSegments); 
 
         #pragma omp parallel for num_threads(4)     // se paraleliza los calculos
         for (int j = 0; j <= numSegments; j++) {
@@ -120,8 +121,6 @@ void DrawParticles() {
         for (int j = 0; j <= numSegments; j++) {    // Pero no se paraleliza el dibujo porque OpenGL no lo permite
             glVertex2f(circle1[j].x, circle1[j].y);
         }
-
-
         glEnd();
 
     }
