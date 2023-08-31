@@ -89,7 +89,7 @@ void DrawParticles() {
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, c);
     }
 
-    #pragma omp parallel for
+    #pragma omp parallel for num_threads(4) shared(particles)
     for (size_t i = 0; i < numParticlesToCreate; i++) {
 
         // Dibujar el cuerpo (un círculo grande)
