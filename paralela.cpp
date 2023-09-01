@@ -148,6 +148,7 @@ void UpdateParticles(int value) {
             float avgColorR = 0.0f, avgColorG = 0.0f, avgColorB = 0.0f;
             int neighborCount = 0;
 
+            #pragma omp parallel for
             for (size_t j = 0; j < numParticlesToCreate; j++) {
                 if (i != j) {
                     float distance = std::sqrt((particles[i].posX - particles[j].posX) * (particles[i].posX - particles[j].posX) + (particles[i].posY - particles[j].posY) * (particles[i].posY - particles[j].posY));
