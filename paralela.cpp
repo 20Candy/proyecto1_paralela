@@ -101,7 +101,7 @@ void DrawParticles() {
         glVertex2f(particles[i].posX, particles[i].posY);
         const int numSegments = 64;
         
-        #pragma omp parallel for
+        #pragma omp parallel for num_threads(4)
         for (int j = 0; j <= numSegments; j++) {
             float angle = j * 2.0f * M_PI / numSegments;
             float dx = particles[i].radius * std::cos(angle);
@@ -119,7 +119,7 @@ void DrawParticles() {
         glVertex2f(particles[i].posX, particles[i].posY);
         const int numSegments2 = 32;
 
-        #pragma omp parallel for
+        #pragma omp parallel for num_threads(4)
         for (int j = 0; j <= numSegments2; j++) {
             float angle = j * 2.0f * M_PI / numSegments2;
             float dx = particles[i].radius/2 * std::cos(angle);
@@ -137,7 +137,7 @@ void DrawParticles() {
         glVertex2f(particles[i].posX, particles[i].posY);
         const int numSegments3 = 64;
 
-        #pragma omp parallel for
+        #pragma omp parallel for num_threads(4)
         for (int j = 0; j <= numSegments3; j++) {
             float angle = j * 2.0f * M_PI / numSegments3;
             float dx = particles[i].radius/4 * std::cos(angle);
