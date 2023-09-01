@@ -142,8 +142,35 @@ void UpdateParticles(int value) {
             if (particles[i].posY < -WINDOW_HEIGHT / 2 + particles[i].radius || particles[i].posY > WINDOW_HEIGHT / 2 - particles[i].radius) {
                 particles[i].velocityY = -particles[i].velocityY;
             }
+
+            // Revisa colisiones
+            #pragma omp for
+            for (size_t j = i + 1; j < numParticlesToCreate; j++) {
+                float dx = particles[j].posX - particles[i].posX;
+                float dy = particles[j].posY - particles[i].posY;
+                float distance = std::sqrt(dx * dx + dy * dy);
+
+                if (distance < particles[i].radius + particles[j].radius) {
+                    float collisionNormalX = dx / distance;
+                    float collisionNormalY = dy / distance;
+                    float relativeVelocityX = particles[j].velocityX - particles[i].velocityX;
+                    float relativeVelocityY = particles[j].velocityY - particles[i].velocityY;
+                    float dotProduct = relativeVelocityX * collisionNormalX + relativeVelocityY * collisionNormalY;
+
+                    float impulseMagnitude = 2.0f * dotProduct;
+                    float impulseX = impulseMagnitude * collisionNormalX;
+                    float impulseY = impulseMagnitude * collisionNormalY;
+
+                    particles[i].velocityX -= impulseX;
+                    particles[i].velocityY -= impulseY;
+                    particles[j].velocityX += impulseX;
+                    particles[j].velocityY += impulseY;
+                }
+
+            }
         }
-    } 
+
+    }
 
     glutPostRedisplay();
     glutTimerFunc(16, UpdateParticles, 0);
