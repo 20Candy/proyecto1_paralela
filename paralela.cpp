@@ -144,7 +144,6 @@ void UpdateParticles(int value) {
             }
 
             // Revisa colisiones
-            #pragma omp for
             for (size_t j = i + 1; j < numParticlesToCreate; j++) {
                 float dx = particles[j].posX - particles[i].posX;
                 float dy = particles[j].posY - particles[i].posY;
