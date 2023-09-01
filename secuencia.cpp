@@ -139,7 +139,7 @@ void UpdateParticles(int value) {
             if (i != j) {
                 float distance = std::sqrt((particles[i].posX - particles[j].posX) * (particles[i].posX - particles[j].posX) + (particles[i].posY - particles[j].posY) * (particles[i].posY - particles[j].posY));
 
-                if (distance < 30) {
+                if (distance < 60) {
                     avgColorR += particles[j].colorR;
                     avgColorG += particles[j].colorG;
                     avgColorB += particles[j].colorB;
