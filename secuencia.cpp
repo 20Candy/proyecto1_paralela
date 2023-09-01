@@ -97,32 +97,6 @@ void DrawParticles() {
         }
         glEnd();
 
-        // Dibujar un circulo negro de la mitad del radio
-        glColor3f(0.0f,0.0f,0.0f);
-        glBegin(GL_TRIANGLE_FAN);
-        glVertex2f(particles[i].posX, particles[i].posY);
-        const int numSegments2 = 32;
-        for (int j = 0; j <= numSegments2; j++) {
-            float angle = j * 2.0f * M_PI / numSegments2;
-            float dx = particles[i].radius/2 * std::cos(angle);
-            float dy = particles[i].radius/2 * std::sin(angle);
-            glVertex2f(particles[i].posX + dx, particles[i].posY + dy);
-        }
-        glEnd();
-
-        // Dibujar el un circulo de color adentro del negro
-        glColor3f((particles[i].colorR)/2, (particles[i].colorG)/2, (particles[i].colorB)/2);
-        glBegin(GL_TRIANGLE_FAN);
-        glVertex2f(particles[i].posX, particles[i].posY);
-        const int numSegments3 = 64;
-        for (int j = 0; j <= numSegments3; j++) {
-            float angle = j * 2.0f * M_PI / numSegments3;
-            float dx = particles[i].radius/4 * std::cos(angle);
-            float dy = particles[i].radius/4 * std::sin(angle);
-            glVertex2f(particles[i].posX + dx, particles[i].posY + dy);
-        }
-        glEnd();
-
     }
 
     glutSwapBuffers();
