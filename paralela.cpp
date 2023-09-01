@@ -171,11 +171,8 @@ void UpdateParticles(int value) {
                 particles[i].colorG = avgColorG;
                 particles[i].colorB = avgColorB;
             }
-
         }
-
     }
-
     glutPostRedisplay();
     glutTimerFunc(16, UpdateParticles, 0);
 }
