@@ -90,32 +90,56 @@ void DrawParticles() {
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, c);
     }
 
-    const int numSegments = 64;
-    std::vector<double> xs(numSegments);
-    std::vector<double> ys(numSegments);
-
     for (size_t i = 0; i < numParticlesToCreate; i++) {
-
         // Dibujar el cuerpo (un círculo grande)
         glColor3f(particles[i].colorR, particles[i].colorG, particles[i].colorB);
         glBegin(GL_TRIANGLE_FAN);
         glVertex2f(particles[i].posX, particles[i].posY);
-
-        #pragma omp parallel
+        const int numSegments = 64;
+        
+        #pragma omp parallel for
         for (int j = 0; j <= numSegments; j++) {
             float angle = j * 2.0f * M_PI / numSegments;
             float dx = particles[i].radius * std::cos(angle);
             float dy = particles[i].radius * std::sin(angle);
 
-            xs[j] = particles[i].posX + dx;
-            ys[j] = particles[i].posY + dy;
+            #pragma omp critical
+            glVertex2f(particles[i].posX + dx, particles[i].posY + dy);
         }
+        glEnd();
 
-        for (int j = 0; j <= numSegments; j++) {
-            glVertex2f(xs[j], ys[j]);
+        // Dibujar un circulo negro de la mitad del radio
+        glColor3f(0.0f,0.0f,0.0f);
+        glBegin(GL_TRIANGLE_FAN);
+        glVertex2f(particles[i].posX, particles[i].posY);
+        const int numSegments2 = 32;
+
+        #pragma omp parallel for
+        for (int j = 0; j <= numSegments2; j++) {
+            float angle = j * 2.0f * M_PI / numSegments2;
+            float dx = particles[i].radius/2 * std::cos(angle);
+            float dy = particles[i].radius/2 * std::sin(angle);
+
+            #pragma omp critical
+            glVertex2f(particles[i].posX + dx, particles[i].posY + dy);
         }
+        glEnd();
 
+        // Dibujar el un circulo de color adentro del negro
+        glColor3f((particles[i].colorR)/2, (particles[i].colorG)/2, (particles[i].colorB)/2);
+        glBegin(GL_TRIANGLE_FAN);
+        glVertex2f(particles[i].posX, particles[i].posY);
+        const int numSegments3 = 64;
 
+        #pragma omp parallel for
+        for (int j = 0; j <= numSegments3; j++) {
+            float angle = j * 2.0f * M_PI / numSegments3;
+            float dx = particles[i].radius/4 * std::cos(angle);
+            float dy = particles[i].radius/4 * std::sin(angle);
+
+            #pragma omp critical
+            glVertex2f(particles[i].posX + dx, particles[i].posY + dy);
+        }
         glEnd();
 
     }
