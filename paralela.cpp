@@ -90,6 +90,10 @@ void DrawParticles() {
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, c);
     }
 
+    // lock omp
+    omp_lock_t lock;
+    omp_init_lock(&lock);
+
     for (size_t i = 0; i < numParticlesToCreate; i++) {
         // Dibujar el cuerpo (un círculo grande)
         glColor3f(particles[i].colorR, particles[i].colorG, particles[i].colorB);
@@ -103,8 +107,9 @@ void DrawParticles() {
             float dx = particles[i].radius * std::cos(angle);
             float dy = particles[i].radius * std::sin(angle);
 
-            #pragma omp critical
+            omp_set_lock(&lock);
             glVertex2f(particles[i].posX + dx, particles[i].posY + dy);
+            omp_unset_lock(&lock);
         }
         glEnd();
 
@@ -120,8 +125,9 @@ void DrawParticles() {
             float dx = particles[i].radius/2 * std::cos(angle);
             float dy = particles[i].radius/2 * std::sin(angle);
 
-            #pragma omp critical
+            omp_set_lock(&lock);
             glVertex2f(particles[i].posX + dx, particles[i].posY + dy);
+            omp_unset_lock(&lock);
         }
         glEnd();
 
@@ -137,8 +143,9 @@ void DrawParticles() {
             float dx = particles[i].radius/4 * std::cos(angle);
             float dy = particles[i].radius/4 * std::sin(angle);
 
-            #pragma omp critical
+            omp_set_lock(&lock);
             glVertex2f(particles[i].posX + dx, particles[i].posY + dy);
+            omp_unset_lock(&lock);
         }
         glEnd();
 
