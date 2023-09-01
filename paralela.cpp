@@ -148,7 +148,7 @@ void UpdateParticles(int value) {
                 float dx = particles[j].posX - particles[i].posX;
                 float dy = particles[j].posY - particles[i].posY;
                 float distance = std::sqrt(dx * dx + dy * dy);
-                if (distance < particles[i].radius * 2) {
+                if (distance < PARTICLE_RADIUS) {
                     particles[i].velocityX = -particles[i].velocityX;
                     particles[i].velocityY = -particles[i].velocityY;
                     particles[j].velocityX = -particles[j].velocityX;
