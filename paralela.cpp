@@ -143,18 +143,34 @@ void UpdateParticles(int value) {
                 particles[i].velocityY = -particles[i].velocityY;
             }
 
-            // Revisa colisiones
-            for (size_t j = i + 1; j < particles.size(); j++) {
-                float dx = particles[j].posX - particles[i].posX;
-                float dy = particles[j].posY - particles[i].posY;
-                float distance = std::sqrt(dx * dx + dy * dy);
-                if (distance < PARTICLE_RADIUS) {
-                    particles[i].velocityX = -particles[i].velocityX;
-                    particles[i].velocityY = -particles[i].velocityY;
-                    particles[j].velocityX = -particles[j].velocityX;
-                    particles[j].velocityY = -particles[j].velocityY;
+            
+            // Cambiar el color de la partícula según el promedio de los colores de las partículas vecinas
+            float avgColorR = 0.0f, avgColorG = 0.0f, avgColorB = 0.0f;
+            int neighborCount = 0;
+
+            for (size_t j = 0; j < numParticlesToCreate; j++) {
+                if (i != j) {
+                    float distance = std::sqrt((particles[i].posX - particles[j].posX) * (particles[i].posX - particles[j].posX) + (particles[i].posY - particles[j].posY) * (particles[i].posY - particles[j].posY));
+
+                    if (distance < 30) {
+                        avgColorR += particles[j].colorR;
+                        avgColorG += particles[j].colorG;
+                        avgColorB += particles[j].colorB;
+                        neighborCount++;
+                    }
                 }
             }
+
+            if (neighborCount > 0) {
+                avgColorR /= neighborCount;
+                avgColorG /= neighborCount;
+                avgColorB /= neighborCount;
+
+                particles[i].colorR = avgColorR;
+                particles[i].colorG = avgColorG;
+                particles[i].colorB = avgColorB;
+            }
+
         }
 
     }
