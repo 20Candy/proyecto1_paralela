@@ -131,26 +131,15 @@ void UpdateParticles(int value) {
         }
 
         // Revisa si hay colisiones entre las partículas
-        for (size_t j = i + 1; j < numParticlesToCreate; j++) {
+        for (size_t j = i + 1; j < particles.size(); j++) {
             float dx = particles[j].posX - particles[i].posX;
             float dy = particles[j].posY - particles[i].posY;
             float distance = std::sqrt(dx * dx + dy * dy);
-
-            if (distance < particles[i].radius + particles[j].radius) {
-                float collisionNormalX = dx / distance;
-                float collisionNormalY = dy / distance;
-                float relativeVelocityX = particles[j].velocityX - particles[i].velocityX;
-                float relativeVelocityY = particles[j].velocityY - particles[i].velocityY;
-                float dotProduct = relativeVelocityX * collisionNormalX + relativeVelocityY * collisionNormalY;
-
-                float impulseMagnitude = 2.0f * dotProduct;
-                float impulseX = impulseMagnitude * collisionNormalX;
-                float impulseY = impulseMagnitude * collisionNormalY;
-
-                particles[i].velocityX -= impulseX;
-                particles[i].velocityY -= impulseY;
-                particles[j].velocityX += impulseX;
-                particles[j].velocityY += impulseY;
+            if (distance < PARTICLE_RADIUS * 2) {
+                particles[i].velocityX = -particles[i].velocityX;
+                particles[i].velocityY = -particles[i].velocityY;
+                particles[j].velocityX = -particles[j].velocityX;
+                particles[j].velocityY = -particles[j].velocityY;
             }
         }
     }
