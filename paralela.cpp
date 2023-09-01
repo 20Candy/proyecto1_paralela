@@ -74,15 +74,6 @@ void CreateParticle() {
 void DrawParticles() {
     glClear(GL_COLOR_BUFFER_BIT);
 
-    frameCount++;
-    std::chrono::high_resolution_clock::time_point currentFrameTime = std::chrono::high_resolution_clock::now();
-    float deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentFrameTime - previousFrameTime).count() / 1000.0f;
-    if (deltaTime >= 1.0f) {
-        fps = static_cast<float>(frameCount) / deltaTime;
-        frameCount = 0;
-        previousFrameTime = currentFrameTime;
-    }
-
     glColor3f(1.0f, 1.0f, 1.0f);
     glRasterPos2f(-WINDOW_WIDTH / 2 + 10, -WINDOW_HEIGHT / 2 + 10);
     std::string fpsText = "FPS: " + std::to_string(static_cast<int>(fps));
@@ -105,6 +96,15 @@ void DrawParticles() {
             glVertex2f(particles[i].posX + dx, particles[i].posY + dy);
         }
         glEnd();
+    }
+
+    frameCount++;
+    std::chrono::high_resolution_clock::time_point currentFrameTime = std::chrono::high_resolution_clock::now();
+    float deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentFrameTime - previousFrameTime).count() / 1000.0f;
+    if (deltaTime >= 1.0f) {
+        fps = static_cast<float>(frameCount) / deltaTime;
+        frameCount = 0;
+        previousFrameTime = currentFrameTime;
     }
 
     glutSwapBuffers();
@@ -153,7 +153,7 @@ void UpdateParticles(int value) {
                 if (i != j) {
                     float distance = std::sqrt((particles[i].posX - particles[j].posX) * (particles[i].posX - particles[j].posX) + (particles[i].posY - particles[j].posY) * (particles[i].posY - particles[j].posY));
 
-                    if (distance < 60) {
+                    if (distance < 30) {
                         avgColorR += particles[j].colorR;
                         avgColorG += particles[j].colorG;
                         avgColorB += particles[j].colorB;
