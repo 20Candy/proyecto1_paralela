@@ -158,12 +158,15 @@ void UpdateParticles(int value) {
                     float distance = std::sqrt((particles[i].posX - particles[j].posX) * (particles[i].posX - particles[j].posX) + (particles[i].posY - particles[j].posY) * (particles[i].posY - particles[j].posY));
 
                     if (distance < 30) {
-                        avgColorR += particles[j].colorR;
-                        avgColorG += particles[j].colorG;
-                        avgColorB += particles[j].colorB;
 
-                        #pragma omp atomic
-                        neighborCount++;
+                        #pragma omp critical
+                        {
+                            avgColorR += particles[j].colorR;
+                            avgColorG += particles[j].colorG;
+                            avgColorB += particles[j].colorB;
+                            neighborCount++;
+                        }
+                        
                     }
                 }
             }
