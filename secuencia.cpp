@@ -67,13 +67,6 @@ void CreateParticle() {
 void DrawParticles() {
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glColor3f(1.0f, 1.0f, 1.0f);
-    glRasterPos2f(-WINDOW_WIDTH / 2 + 10, -WINDOW_HEIGHT / 2 + 10);
-    std::string fpsText = "FPS: " + std::to_string(static_cast<int>(fps));
-    for (char c : fpsText) {
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, c);
-    }
-
     for (size_t i = 0; i < numParticlesToCreate; i++) {
         // Dibujar el cuerpo (un círculo grande)
         glColor3f(particles[i].colorR, particles[i].colorG, particles[i].colorB);
@@ -88,6 +81,13 @@ void DrawParticles() {
         }
         glEnd();
 
+    }
+
+    glColor3f(1.0f, 1.0f, 1.0f);
+    glRasterPos2f(-WINDOW_WIDTH / 2 + 10, -WINDOW_HEIGHT / 2 + 10);
+    std::string fpsText = "FPS: " + std::to_string(static_cast<int>(fps));
+    for (char c : fpsText) {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, c);
     }
 
     frameCount++;
