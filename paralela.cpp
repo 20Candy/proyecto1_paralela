@@ -102,15 +102,6 @@ void DrawParticles() {
         glEnd();
     }
 
-    frameCount++;
-    std::chrono::high_resolution_clock::time_point currentFrameTime = std::chrono::high_resolution_clock::now();
-    float deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentFrameTime - previousFrameTime).count() / 1000.0f;
-    if (deltaTime >= 1.0f) {
-        fps = static_cast<float>(frameCount) / deltaTime;
-        frameCount = 0;
-        previousFrameTime = currentFrameTime;
-    }
-
     glutSwapBuffers();
 }
 
@@ -192,6 +183,16 @@ void UpdateParticles(int value) {
             }
         }
     }
+
+    frameCount++;
+    std::chrono::high_resolution_clock::time_point currentFrameTime = std::chrono::high_resolution_clock::now();
+    float deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentFrameTime - previousFrameTime).count() / 1000.0f;
+    if (deltaTime >= 1.0f) {
+        fps = static_cast<float>(frameCount) / deltaTime;
+        frameCount = 0;
+        previousFrameTime = currentFrameTime;
+    }
+    
     glutPostRedisplay();
     glutTimerFunc(16, UpdateParticles, 0);
 }
