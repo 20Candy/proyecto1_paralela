@@ -188,10 +188,13 @@ int main(int argc, char** argv) {
         std::cout << "Usage: " << argv[0] << " numParticles\n";
         return 1;
     }
+
+    omp_set_num_threads(4);                             // Establece el número de hilos a utilizar
+
     previousFrameTime = std::chrono::high_resolution_clock::now();
     numParticlesToCreate = std::atoi(argv[1]);          // Obtiene el número de partículas a crear
 
-    particles.reserve(numParticlesToCreate);                                // Reserva el espacio para las partículas
+    particles.reserve(numParticlesToCreate);            // Reserva el espacio para las partículas
 
     glutInit(&argc, argv);                              // Inicializa GLUT
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);        // Habilita el doble buffer y el modelo de color RGB
