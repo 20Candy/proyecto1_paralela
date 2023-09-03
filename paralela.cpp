@@ -64,11 +64,15 @@ void CreateParticle() {
 
             particles[i] = Particle(vx, vy, x, y, r, g, b, 0.0f, radius);
         }
+
+        #pragma omp master
+        {
+            std::chrono::high_resolution_clock::time_point endTime = std::chrono::high_resolution_clock::now();
+            std::chrono::duration<double> totalTime = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
+            std::cout << "Tiempo de creación de partículas: " << totalTime.count() << " segundos\n";
+        }
     } 
 
-    std::chrono::high_resolution_clock::time_point endTime = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> totalTime = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
-    std::cout << "Tiempo de creación de partículas: " << totalTime.count() << " segundos\n";
 }
 
 void DrawParticles() {
@@ -157,6 +161,8 @@ void UpdateParticles(int value) {
                         avgColorR += particles[j].colorR;
                         avgColorG += particles[j].colorG;
                         avgColorB += particles[j].colorB;
+
+                        #pragma omp atomic
                         neighborCount++;
                     }
                 }
