@@ -152,24 +152,34 @@ void UpdateParticles(int value) {
             float avgColorR = 0.0f, avgColorG = 0.0f, avgColorB = 0.0f;
             int neighborCount = 0;
 
-            #pragma omp parallel for
-            for (size_t j = 0; j < numParticlesToCreate; j++) {
-                if (i != j) {
-                    float distance = std::sqrt((particles[i].posX - particles[j].posX) * (particles[i].posX - particles[j].posX) + (particles[i].posY - particles[j].posY) * (particles[i].posY - particles[j].posY));
+            #pragma omp parallel
+            {
+                float privateAvgColorR = 0.0f, privateAvgColorG = 0.0f, privateAvgColorB = 0.0f;
+                int privateNeighborCount = 0;
+                
+                #pragma omp for
+                for (size_t j = 0; j < numParticlesToCreate; j++) {
+                    if (i != j) {
+                        float distance = std::sqrt((particles[i].posX - particles[j].posX) * (particles[i].posX - particles[j].posX) + (particles[i].posY - particles[j].posY) * (particles[i].posY - particles[j].posY));
 
-                    if (distance < 30) {
-
-                        #pragma omp critical
-                        {
-                            avgColorR += particles[j].colorR;
-                            avgColorG += particles[j].colorG;
-                            avgColorB += particles[j].colorB;
-                            neighborCount++;
+                        if (distance < 30) {
+                            privateAvgColorR += particles[j].colorR;
+                            privateAvgColorG += particles[j].colorG;
+                            privateAvgColorB += particles[j].colorB;
+                            privateNeighborCount++;
                         }
-                        
                     }
                 }
+
+                #pragma omp critical
+                {
+                    avgColorR += privateAvgColorR;
+                    avgColorG += privateAvgColorG;
+                    avgColorB += privateAvgColorB;
+                    neighborCount += privateNeighborCount;
+                }
             }
+
 
             if (neighborCount > 0) {
                 avgColorR /= neighborCount;
