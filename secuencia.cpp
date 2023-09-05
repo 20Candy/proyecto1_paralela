@@ -5,10 +5,12 @@
 #include <random>
 #include <chrono>
 #include <random>
+#include <string>
+#include <cstdlib> // Librerías que importar
 
 const int WINDOW_WIDTH = 1920;
-const int WINDOW_HEIGHT = 1080;
-const float PARTICLE_RADIUS = 60.0f;
+const int WINDOW_HEIGHT = 1080; //Tamaño de la pantalla.
+const float PARTICLE_RADIUS = 60.0f; //Tamaño de las partículas.
 
 struct Particle {
     float velocityX;
@@ -23,23 +25,29 @@ struct Particle {
 
     Particle(float vx, float vy, float x, float y, float r, float g, float b, float ch, float rad)
         : velocityX(vx), velocityY(vy), posX(x), posY(y), colorR(r), colorG(g), colorB(b), color_change(ch), radius(rad) {}
-};
+}; //Estructura para simular una particula. 
 
-std::vector<Particle> particles;
+std::vector<Particle> particles; //Vector para partículas.
 
-std::chrono::high_resolution_clock::time_point previousFrameTime;
+std::chrono::high_resolution_clock::time_point previousFrameTime; 
 int frameCount = 0;
-float fps = 0.0f;
+float fps = 0.0f; // Implementación de FPS.
 
 int numParticlesToCreate = 0;
-bool creationFinished = false;
+bool creationFinished = false; //Cantidad de partículas y creación respectiva
 
+//CreateParticle
+//0 Parametros
+//Crear Partículas
+//Retorno nulo
 void CreateParticle() {
     // Tomar el tiempo de inicio
-    std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now();
-
+    std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now(); 
+    
+    // Creación secuencial de las partículas
     for (int i = 0; i < numParticlesToCreate; i++) {
         std::random_device rd;
+        //Distribución aleatoria para crear las particulas basada en radio, color, posición y movimiento
         std::mt19937 generator(rd());
         std::uniform_real_distribution<float> randomRadius(20.0f, PARTICLE_RADIUS);
         std::uniform_real_distribution<float> randomFloatX(-WINDOW_WIDTH / 2 + PARTICLE_RADIUS, WINDOW_WIDTH / 2 - PARTICLE_RADIUS);
@@ -57,13 +65,18 @@ void CreateParticle() {
         float b = randomColor(generator);
 
         particles[i] = Particle(vx, vy, x, y, r, g, b, 0.0f, radius);
+        //Creación de las partículas
     } 
     
+    //Tiempo de ejecución para todas las particulas.
     std::chrono::high_resolution_clock::time_point endTime = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> totalTime = std::chrono::duration_cast<std::chrono::duration<double>>(endTime - startTime);
     std::cout << "Tiempo de creación de partículas: " << totalTime.count() << " segundos\n";
 }
-
+//DrawParticulas
+//0 Parametros
+//Dibuja la particulas en la pantalla 
+//Retorno nulo
 void DrawParticles() {
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -82,14 +95,15 @@ void DrawParticles() {
         glEnd();
 
     }
-
+   //Color y colocarlo en la pantalla.
     glColor3f(1.0f, 1.0f, 1.0f);
     glRasterPos2f(-WINDOW_WIDTH / 2 + 10, -WINDOW_HEIGHT / 2 + 10);
     std::string fpsText = "FPS: " + std::to_string(static_cast<int>(fps));
+    //FPS.
     for (char c : fpsText) {
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, c);
     }
-
+    //Hace el conteo de las frames per second basandose en el tiempo.
     frameCount++;
     std::chrono::high_resolution_clock::time_point currentFrameTime = std::chrono::high_resolution_clock::now();
     float deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentFrameTime - previousFrameTime).count() / 1000.0f;
@@ -98,18 +112,23 @@ void DrawParticles() {
         frameCount = 0;
         previousFrameTime = currentFrameTime;
     }
-
+    //Cambio de Buffers
     glutSwapBuffers();
 }
-
+//UpdateParticle
+//0 Parametros
+//Actualiza la particulas a dibujar.
+//Retorno nulo
 void UpdateParticles(int value) {
     std::chrono::high_resolution_clock::time_point currentFrameTime = std::chrono::high_resolution_clock::now();
     float deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentFrameTime - previousFrameTime).count() / 1000.0f;
+    //Cambio para los tiempos y el framerate. 
 
+    //Secuencial de los updates para cada particula
     for (size_t i = 0; i < numParticlesToCreate; i++) {
         particles[i].posX += particles[i].velocityX * deltaTime;
         particles[i].posY += particles[i].velocityY * deltaTime;
-
+        //Distribución aleatorio para los datos.
         std::random_device rd;
         std::default_random_engine generator(rd());
         std::uniform_real_distribution<float> randomColor(0.0f, 1.0f);
@@ -121,20 +140,20 @@ void UpdateParticles(int value) {
             particles[i].colorG = randomColor(generator);
             particles[i].colorB = randomColor(generator);
             particles[i].color_change = 0.0f;
-        }
+        } //Nuevos colores.
 
         if (particles[i].posX < -WINDOW_WIDTH / 2 + particles[i].radius || particles[i].posX > WINDOW_WIDTH / 2 - particles[i].radius) {
             particles[i].velocityX = -particles[i].velocityX;
         }
         if (particles[i].posY < -WINDOW_HEIGHT / 2 + particles[i].radius || particles[i].posY > WINDOW_HEIGHT / 2 - particles[i].radius) {
             particles[i].velocityY = -particles[i].velocityY;
-        }
+        } //La nueva posición en el caso que si se topa en la pantalla.
 
         // Cambiar el color de la partícula según el promedio de los colores de las partículas vecinas
         float avgColorR = 0.0f, avgColorG = 0.0f, avgColorB = 0.0f;
         int neighborCount = 0;
 
-
+       //Secuencial para ya haciendo la dirección de las partpiculas, y colores pasandose en sus vecinos y promedios.
         for (size_t j = 0; j < numParticlesToCreate; j++) {
             if (i != j) {
                 float distance = std::sqrt((particles[i].posX - particles[j].posX) * (particles[i].posX - particles[j].posX) + (particles[i].posY - particles[j].posY) * (particles[i].posY - particles[j].posY));
@@ -161,15 +180,44 @@ void UpdateParticles(int value) {
 
     glutPostRedisplay();
     glutTimerFunc(16, UpdateParticles, 0);
+    //Hace un nuevo display y cambia la función de tiempo
 }
 
 int main(int argc, char** argv) {
-    if (argc < 2) {
-        std::cout << "Usage: " << argv[0] << " numParticles\n";
-        return 1;
+        if (argc < 2) {
+        std::cout << "Uso por defecto de 10 partículas al no ingresar datos.\n";  //Se asegura que el usuario ingrese un input.
+        numParticlesToCreate = 10;
+    }
+
+    char* input = argv[1];
+
+    bool isNumber = false;
+    for (char* c = input; *c != '\0'; ++c) {
+        if (!std::isdigit(*c)) {
+            isNumber = true;
+            break;
+        }
+    }
+
+    if (isNumber) {
+        // Seguridad. Asegura que sea un entero positivo, menor de 15000 para velocidad
+        std::cout << "Debe de ingresar un número, no String.\n";
+        return 1; //Programación Defensiva 
+    } else {
+         int number = std::stoi(input);
+         if (number > 15000){
+             std::cout << "Debe de ingresar un número mayor que 15000. Usando 10 por defecto.\n";
+             numParticlesToCreate = 10;
+         }
+        else if (number < 0){
+            std::cout << "No se ingreso un número positivo. Usando 10 por defecto.\n";
+            numParticlesToCreate = 10;
+        } else {
+            numParticlesToCreate = std::atoi(input);          // Obtiene el número de partículas a crear
+        }
+            
     }
     previousFrameTime = std::chrono::high_resolution_clock::now();
-    numParticlesToCreate = std::atoi(argv[1]);          // Obtiene el número de partículas a crear
 
     particles.reserve(numParticlesToCreate);                                // Reserva el espacio para las partículas
 
