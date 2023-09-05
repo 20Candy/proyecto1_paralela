@@ -226,7 +226,7 @@ int main(int argc, char** argv) {
     if (argc < 2) {
         std::cout << "Uso por defecto de 10 partículas al no ingresar datos.\n";  //Se asegura que el usuario ingrese un input.
         numParticlesToCreate = 10;
-    }
+    }else{
 
     char* input = argv[1];
 
@@ -240,8 +240,8 @@ int main(int argc, char** argv) {
 
     if (isNumber) {
         // Seguridad. Asegura que sea un entero positivo, menor de 15000 para velocidad
-        std::cout << "Debe de ingresar un número, no String.\n";
-        return 1; //Programación Defensiva 
+        std::cout << "Debe de ingresar un número, no String. Usando 10 por defecto.\n";
+        numParticlesToCreate = 10; //Programación Defensiva 
     } else {
          int number = std::stoi(input);
          if (number > 15000){
@@ -255,7 +255,7 @@ int main(int argc, char** argv) {
             numParticlesToCreate = std::atoi(input);          // Obtiene el número de partículas a crear
         }
             
-    }
+    }}
     
 
     omp_set_num_threads(4);                             // Establece el número de hilos a utilizar
