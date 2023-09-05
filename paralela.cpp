@@ -224,13 +224,15 @@ void UpdateParticles(int value) {
 
 int main(int argc, char** argv) {
     if (argc < 2) {
-        std::cout << "Usage: " << argv[0] << " numParticles\n";  //Se asegura que el usuario ingrese un input.
-        return 1;
+        std::cout << "Uso por defecto de 10 partículas al no ingresar datos.\n";  //Se asegura que el usuario ingrese un input.
+        numParticlesToCreate = 10;
     }
 
+    char* input = argv[1];
+
     bool isNumber = false;
-    for (char c : input) {
-        if (!std::isdigit(c)) {
+    for (char* c = input; *c != '\0'; ++c) {
+        if (!std::isdigit(*c)) {
             isNumber = true;
             break;
         }
@@ -242,13 +244,15 @@ int main(int argc, char** argv) {
         return 1; //Programación Defensiva 
     } else {
          int number = std::stoi(input);
-         if (numner > 15000){
-             std::cout << "Debe de ingresar un número mayor que 15000.\n";
-             return 1;
+         if (number > 15000){
+             std::cout << "Debe de ingresar un número mayor que 15000. Usando 10 por defecto.\n";
+             numParticlesToCreate = 10;
          }
-        if (number < 0){
-            std::cout << "Debe de ingresar un número positvo.\n";
-            return 1;
+        else if (number < 0){
+            std::cout << "No se ingreso un número positivo. Usando 10 por defecto.\n";
+            numParticlesToCreate = 10;
+        } else {
+            numParticlesToCreate = std::atoi(input);          // Obtiene el número de partículas a crear
         }
             
     }
@@ -257,7 +261,7 @@ int main(int argc, char** argv) {
     omp_set_num_threads(4);                             // Establece el número de hilos a utilizar
 
     previousFrameTime = std::chrono::high_resolution_clock::now();
-    numParticlesToCreate = std::atoi(argv[1]);          // Obtiene el número de partículas a crear
+    
 
     particles.reserve(numParticlesToCreate);            // Reserva el espacio para las partículas
 
