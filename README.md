@@ -54,6 +54,6 @@ Incluye
 
 ## Autores ✒️
 
-* **Stefano Aragoni** - *desarrollo* - [#20Candy](https://github.com/20Candy)
+* **Stefano Aragoni** - *desarrollo* - [#stefanoaragoni](https://github.com/20Candy)
 * **Roberto Vallecillos** - *desarrollo* - [#20Candy](https://github.com/Roberto-VC)
-* **Carol Arevalo** - *desarrollo* - [#20Candy](https://github.com/stefanoaragoni)
+* **Carol Arevalo** - *desarrollo* - [#Roberto-VC](https://github.com/stefanoaragoni)
