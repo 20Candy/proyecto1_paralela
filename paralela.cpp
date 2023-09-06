@@ -150,7 +150,7 @@ void UpdateParticles(int value) {
         //Distribución aleatorio para los datos.
 
         #pragma omp for
-        //Paralelización de los datos para los circulos. Hace el cambio de posición basado en su belocidad.
+        //Paralelización de los datos para los circulos. Hace el cambio de posición basado en su velocidad.
         for (int i = 0; i < numParticlesToCreate; i++) {
             particles[i].posX += particles[i].velocityX;
             particles[i].posY += particles[i].velocityY;
